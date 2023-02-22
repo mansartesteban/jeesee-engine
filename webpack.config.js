@@ -15,10 +15,11 @@ module.exports = {
             path: false
         },
         alias: {
-            "@": path.resolve(__dirname, "src"),
             "@assets": path.resolve(__dirname, "public/assets"),
             "@utils": path.resolve(__dirname, "src/utils"),
-            "@type": path.resolve(__dirname, "src/@types")
+            "@type": path.resolve(__dirname, "src/@types"),
+            "@actors": path.resolve(__dirname, "src/actors"),
+            "@": path.resolve(__dirname, "src"),
         },
         extensions: ['.tsx', '.ts', '.js'],
     },

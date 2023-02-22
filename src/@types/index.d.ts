@@ -1,7 +1,8 @@
+import Game from "@/Game";
 import { Mesh, Object3D } from "three";
 
 declare global {
-    interface Window { Auralux: any; }
+    interface Window { __auralux__: Game; }
 }
 
 interface _Observer {
@@ -21,6 +22,7 @@ type _LocalObserver = {
 
 interface _Entity {
     object: Object3D | null
+    children: _Entity[]
     update() :void;
 }
 

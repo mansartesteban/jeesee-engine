@@ -1,4 +1,4 @@
-import { _Entity } from "@/@types"
+import { _Entity } from "@types"
 import { BoxGeometry, BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "three"
 
 /*
@@ -11,12 +11,21 @@ class Actor implements _Entity {
     material: MeshBasicMaterial | null
     object: Object3D | null
 
+    children: _Entity[]
+
 	constructor() {
         this.geometry = null
         this.material = null
         this.object = null
+        this.children = []
 
         this.create()
+    }
+
+    add(entity: _Entity) :this {
+        console.log("this", this)
+        this.children.push(entity)
+        return this
     }
 	
     create() :void {}

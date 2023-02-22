@@ -1,7 +1,8 @@
-import Planet from "@/actors/Planet"
-import PointLight from "@/actors/PointLight"
-import Star from "@/actors/Star"
+import Planet from "@/actors/StellarSystem/Planet"
+import PointLight from "@/actors/StellarSystem/PointLight"
+import Star from "@/actors/StellarSystem/Star"
 import Scene from "@/Scene"
+import StellarSystem from "@actors/StellarSystem/StellarSystem"
 
 import {
 	BoxGeometry,
@@ -22,20 +23,11 @@ class MainScene extends Scene {
 	}
 
 	init(): void {
-		let star = new Star()
-		let pointLight = new PointLight();
-		
-		this.sceneManager.add(star)
-		this.sceneManager.add(pointLight)
+			let sterllarSystem = new StellarSystem();
+			this.sceneManager.add(sterllarSystem)
 
-		let planets = []
-		for (let i = 0; i < 100 ; i++) {
-			let planet = new Planet();
-			this.sceneManager.add(planet)
-		}
-		
-		
-		
+			let pointLight = new PointLight();
+    	this.sceneManager.add(pointLight)
 	}
 
 	update(): void {

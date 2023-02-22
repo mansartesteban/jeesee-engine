@@ -1,5 +1,5 @@
-import { Mesh, MeshBasicMaterial, MeshPhongMaterial, SphereGeometry } from "three";
-import Actor from "./Actor";
+import { Mesh, MeshPhongMaterial, SphereGeometry } from "three";
+import Actor from "@actors/Actor";
 
 
 class Star extends Actor {
@@ -12,15 +12,6 @@ class Star extends Actor {
         this.geometry = new SphereGeometry(20, 200, 100)
 		this.material = new MeshPhongMaterial({ color: 0xc58e45 })
 		this.object = new Mesh(this.geometry, this.material)
-    }
-
-    update() :void {
-
-        
-        // if (this.object) {
-        //     this.object.rotation.y += .001
-        //     this.object.rotation.z += .003
-        // }
     }
 
 }

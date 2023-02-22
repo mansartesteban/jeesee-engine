@@ -1,6 +1,6 @@
 import GeometryUtils from "@/utils/GeometryUtils";
 import { PointLight as ThreePointLight, Vector3 } from "three";
-import Actor from "./Actor";
+import Actor from "../Actor";
 
 class PointLight extends Actor {
 
@@ -31,7 +31,7 @@ class PointLight extends Actor {
                 this.direction = 1
             }
 
-            GeometryUtils.rotateAroundAxis(this.object, new Vector3(0, 1, 0), .001)
+            GeometryUtils.rotateAroundAxis(this.object, new Vector3(0, 1, 0), .01)
             
         }
     }

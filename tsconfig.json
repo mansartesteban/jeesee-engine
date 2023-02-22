@@ -13,8 +13,12 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@types": ["src/@types"]
+      "@types": ["src/@types"],
+      "@types/*": ["src/@types/*"],
+      "@assets/*": ["public/assets/*"],
+      "@utils/*": ["src/utils/*"],
+      "@actors/*": ["src/actors/*"],
+      "@/*": ["src/*"]
     }
   },
   "exclude": [

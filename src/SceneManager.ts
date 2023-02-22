@@ -13,13 +13,19 @@ class SceneManager {
     }
 
     add(entity: _Entity) {
+        let $this = this
+        if (entity.children) {
+            console.log("entity has children", entity.children)
+            entity.children.forEach(child => $this.add(child))
+        }
         this.entities.push(entity)
-        console.log("entity mesh", entity.object)
         this.threeScene.add(entity.object as Object3D)
     }
 
     update() {
-        this.entities.forEach(entity => entity.update())
+        this.entities.forEach(entity => {
+            entity.update()
+        })
     }
 
 }
