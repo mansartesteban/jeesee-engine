@@ -1,6 +1,14 @@
 import GeometryUtils from "@utils/GeometryUtils"
-import { Mesh, MeshBasicMaterial, MeshPhongMaterial, SphereGeometry, Vector3 } from "three"
-import Actor from "../Actor"
+import MathUtils from "@utils/MathUtils"
+import {
+	Mesh,
+	MeshBasicMaterial,
+	MeshPhongMaterial,
+	SphereGeometry,
+	Vector3,
+} from "three"
+import Actor from "@actors/Actor"
+import Noise from "@utils/Noise/Noise"
 
 class Planet extends Actor {
 	// Todo : "extends Corpse"
@@ -8,11 +16,15 @@ class Planet extends Actor {
 	spread: number
 	speed: number
 
+	tmp: number
+
 	constructor() {
 		super()
 
-		this.spread = Math.random()
-		this.speed = Math.random()
+		this.spread = MathUtils.random(1, 10) 
+		this.speed = MathUtils.random(1, 100) / 1000
+
+		this.tmp = 0
 	}
 
 	create() {
@@ -25,8 +37,16 @@ class Planet extends Actor {
 	}
 
 	update() {
+
+		let t = Noise.perlinNoise(this.tmp, this.tmp, this.tmp)
+        this.tmp += this.speed / 10
+
 		if (this.object) {
-			GeometryUtils.rotateAroundAxis(this.object, new Vector3(1, 1, 0), this.speed / 10)
+			GeometryUtils.rotateAroundAxis(
+				this.object,
+				new Vector3(1, 1, 0),
+				t / 5
+			)
 		}
 	}
 }

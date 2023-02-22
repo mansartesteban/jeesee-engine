@@ -1,4 +1,4 @@
-import { _Entity } from "@types"
+import { _ActorOptions, _Entity } from "@types"
 import { BoxGeometry, BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "three"
 
 /*
@@ -12,12 +12,18 @@ class Actor implements _Entity {
     object: Object3D | null
 
     children: _Entity[]
+    options?: _ActorOptions
 
-	constructor() {
+
+	constructor(options?: _ActorOptions) {
         this.geometry = null
         this.material = null
         this.object = null
         this.children = []
+
+        if (options) {
+            this.options = options
+        }
 
         this.create()
     }

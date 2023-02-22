@@ -1,8 +1,12 @@
 import Game from "@/Game";
-import { Mesh, Object3D } from "three";
+import { Object3D, Vector3 } from "three";
 
 declare global {
-    interface Window { __auralux__: Game; }
+    var __auralux__: {
+        game: Game,
+        helpers: {
+        }
+    }
 }
 
 interface _Observer {
@@ -23,10 +27,18 @@ type _LocalObserver = {
 interface _Entity {
     object: Object3D | null
     children: _Entity[]
+    options?: _ActorOptions,
     update() :void;
 }
 
+type _ActorOptions = {
+    position?: Vector3,
+    rotation?: Vector3,
+    scale?: Vector3
+}
+
 export {
+    _ActorOptions,
     _Entity,
     _Observer,
     _LocalObserver

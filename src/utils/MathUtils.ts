@@ -1,6 +1,6 @@
 class MathUtils {
-  static randomBetween() :number {
-    return 0
+  static random(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min
   }
 }
 

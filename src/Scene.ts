@@ -16,9 +16,7 @@ class Scene {
 		this.scene = null
 
 		if (window.requestAnimationFrame === undefined) {
-			throw new Error(
-				"L'API 'requestAnimationFrame' ne fonctionne pas sur ce navigateur"
-			)
+			throw new Error("L'API 'requestAnimationFrame' ne fonctionne pas sur ce navigateur")
 		}
 
 		this.scene = new ThreeScene()
@@ -28,6 +26,7 @@ class Scene {
 			0.1,
 			1000
 		)
+		
 
 		this.renderer = new WebGLRenderer({antialias: true})
 		this.renderer.setSize(window.innerWidth, window.innerHeight)

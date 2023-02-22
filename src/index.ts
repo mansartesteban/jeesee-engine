@@ -8,9 +8,13 @@ import Game from "@/Game"
 
 const game = new Game()
 
-console.log("game", game)
 
-window.__auralux__ = game
+window.__auralux__ = {
+    game: game,
+    helpers: {
+    }
+}
 
+ 
 game.start()
 

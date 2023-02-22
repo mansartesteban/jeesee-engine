@@ -12,6 +12,7 @@ import {
 	PerspectiveCamera,
 	PointLight as ThreePointLight,
 	Scene as ThreeScene,
+	Vector3,
 	WebGLRenderer,
 } from "three"
 
@@ -23,11 +24,53 @@ class MainScene extends Scene {
 	}
 
 	init(): void {
-			let sterllarSystem = new StellarSystem();
-			this.sceneManager.add(sterllarSystem)
+		let sterllarSystem = new StellarSystem();
+		this.sceneManager.add(sterllarSystem)
 
-			let pointLight = new PointLight();
+		let pointLight
+
+		pointLight = new PointLight({
+			position: new Vector3(100, 100, 100)
+		});
     	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(-100, -100, -100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(100, 100, -100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(100, -100, 100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(100, -100, -100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(-100, 100, 100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(-100, 100, -100)
+		});
+    	this.sceneManager.add(pointLight)
+
+		pointLight = new PointLight({
+			position: new Vector3(-100, -100, 100)
+		});
+    	this.sceneManager.add(pointLight)
+
+	
+		
 	}
 
 	update(): void {

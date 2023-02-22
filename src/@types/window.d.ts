@@ -1,5 +1,5 @@
 interface Window {
-  __auralux__: any
+  __auralux__: number
 }
 
 export {
