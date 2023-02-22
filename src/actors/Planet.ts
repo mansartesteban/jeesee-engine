@@ -1,18 +1,28 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial } from "three";
-import Actor from "./Actor";
+import { Mesh, MeshBasicMaterial, MeshPhongMaterial, SphereGeometry } from "three"
+import Actor from "./Actor"
 
-class Planet extends Actor { // Todo : "extends Corpse"
+class Planet extends Actor {
+	// Todo : "extends Corpse"
 
-    constructor() {
-        super()
-    }
+	spread: number
 
-    create() {
-        this.geometry = new BoxGeometry(1, 1, 1)
-		this.material = new MeshBasicMaterial({ color: 0xc58e45 })
+	constructor() {
+		super()
+
+		this.spread = Math.random()
+	}
+
+	create() {
+		this.geometry = new SphereGeometry(1, 20, 10)
+		this.material = new MeshPhongMaterial({ color: 0xc58e45 })
 		this.object = new Mesh(this.geometry, this.material)
-    }
+	}
 
+	update() {
+		if (this.object) {
+			this.object.position.x += this.spread / 10
+		}
+	}
 }
 
 export default Planet

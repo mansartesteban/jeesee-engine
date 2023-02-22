@@ -1,3 +1,4 @@
+import Planet from "@/actors/Planet"
 import PointLight from "@/actors/PointLight"
 import Star from "@/actors/Star"
 import Scene from "@/Scene"
@@ -24,10 +25,17 @@ class MainScene extends Scene {
 		let star = new Star()
 		let pointLight = new PointLight();
 		
-		
-		
 		this.sceneManager.add(star)
 		this.sceneManager.add(pointLight)
+
+		let planets = []
+		for (let i = 0; i < 100 ; i++) {
+			let planet = new Planet();
+			this.sceneManager.add(planet)
+		}
+		
+		
+		
 	}
 
 	update(): void {

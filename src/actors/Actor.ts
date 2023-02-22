@@ -1,6 +1,10 @@
 import { _Entity } from "@/@types"
 import { BoxGeometry, BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "three"
 
+/*
+    Todo : Créer les écouteurs "onSpawn", "onCreate", "onUpdate"
+*/
+
 class Actor implements _Entity {
 
     geometry: BufferGeometry | null

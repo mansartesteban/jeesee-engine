@@ -23,7 +23,7 @@ class Scene {
 
 		this.scene = new ThreeScene()
 		this.camera = new PerspectiveCamera(
-			30,
+			80,
 			window.innerWidth / window.innerHeight,
 			0.1,
 			1000
@@ -42,7 +42,7 @@ class Scene {
 		})
 
 		if (this.camera) {
-			this.camera.position.z = 5
+			this.camera.position.z = 40
 		}
 
 		document.body.appendChild(this.renderer.domElement)

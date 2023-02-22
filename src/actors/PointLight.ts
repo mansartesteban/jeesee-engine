@@ -14,9 +14,9 @@ class PointLight extends Actor {
 
     create() {
         this.object = new ThreePointLight(0xFFFFFF, 1, 1000);
-		this.object.position.x = 10
-		this.object.position.y = 20
-		this.object.position.z = 10
+		this.object.position.x = 100
+		this.object.position.y = 200
+		this.object.position.z = 100
 
         
     }
@@ -31,7 +31,7 @@ class PointLight extends Actor {
                 this.direction = 1
             }
 
-            GeometryUtils.rotateAroundAxis(this.object, new Vector3(0, 1, 0), .01)
+            GeometryUtils.rotateAroundAxis(this.object, new Vector3(0, 1, 0), .001)
             
         }
     }

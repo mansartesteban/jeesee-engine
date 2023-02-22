@@ -9,7 +9,7 @@ class Star extends Actor {
     }
 
     create() {
-        this.geometry = new SphereGeometry(1, 200, 100)
+        this.geometry = new SphereGeometry(20, 200, 100)
 		this.material = new MeshPhongMaterial({ color: 0xc58e45 })
 		this.object = new Mesh(this.geometry, this.material)
     }
