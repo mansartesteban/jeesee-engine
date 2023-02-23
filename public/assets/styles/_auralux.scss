@@ -1,0 +1,29 @@
+.dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: red;
+  bottom: 50vh;
+  left: 0;
+}
+
+.dot.success {
+  background: lime;
+  width: 4px;
+  height: 4px;
+}
+
+canvas {
+  // width: 100vw;
+  // height: 100vh;
+  border: 2px solid blue;
+}
+
+#infos {
+  background: #002266;
+  font-family: 'Courier New', Courier, monospace;
+  color: white;
+  padding: .5em;
+  border-radius: 5px;
+  font-size: 12px;
+}
