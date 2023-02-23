@@ -5,9 +5,14 @@
   font-size: inherit;
   font-family: inherit;
   color: inherit;
+  box-sizing: border-box;
 }
 
 html, body {
   font-size: 30px;
   color: white;
+}
+
+body {
+  overflow: hidden;
 }

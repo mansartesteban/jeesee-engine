@@ -1,3 +1,5 @@
+
+
 .dot {
   position: absolute;
   width: 2px;
@@ -14,9 +16,8 @@
 }
 
 canvas {
-  // width: 100vw;
-  // height: 100vh;
-  border: 2px solid blue;
+  width: 100vw;
+  height: 100vh;
 }
 
 #infos {

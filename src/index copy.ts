@@ -32,23 +32,19 @@ function resizeCanvas() {
 /*
  https://www.youtube.com/watch?v=jvPPXbo87ds
  Cardinal spline
- Hermite spline
- ~39min
+ ~43min
 */
 
 window.addEventListener("resize", resizeCanvas)
 document.body.appendChild(canvas);
-
-MyNoise.regenerate()
 draw()
-
-
 function draw() {
 
   let dotSize  = 5
   if (canvas.getContext) {
     const ctx = canvas.getContext("2d");
   
+    // MyNoise.regenerate()
   
     if (ctx) {
   
@@ -83,6 +79,7 @@ function draw() {
         }
       }
   
+          
       for (let i = 0; i < MyNoise.arr.length; i++) {
   
         let current = new Vector2(
@@ -91,6 +88,7 @@ function draw() {
         );
   
         if (i > 0) {
+          // console.log("i > 0")
           ctx.strokeStyle = "#00FF00";
           let last = new Vector2(
             MyNoise.mapRange(i - 1, 0, MyNoise.arr.length, 0, canvas.width),
@@ -168,17 +166,18 @@ function draw() {
   }
 }
 
+console.log("herE?")
 let infos = document.createElement("div");
 infos.id = "infos";
 infos.style.position = "absolute";
 infos.style.visibility = "hidden"
 document.body.appendChild(infos);
 
-canvas.addEventListener("mousemove", (ev: MouseEvent) => {
+window.addEventListener("mousemove", (ev: MouseEvent) => {
+  console.log("rect", rects)
   let rect = rects.find((r: any) => {
     return r.from.x <= ev.clientX && r.to.x >= ev.clientX && r.from.y <= ev.clientY && r.to.y >= ev.clientY
   })
-
 
   if (rect) {
     
