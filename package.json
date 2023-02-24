@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "concurrently \"npm run serve\" \"npm run ts\" ",
+    "start": "concurrently \"npm run ts\" \"npm run serve\" ",
     "serve": "npx webpack serve --live-reload",
     "ts": "npx tsc",
     "build": ".\\node_modules\\.bin\\webpack"

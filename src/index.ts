@@ -6,6 +6,8 @@ import "@assets/styles/_auralux.scss";
 import Game from "@/Game";
 import MyNoise from "@utils/Noise/MyNoise";
 import { SplineCurve, Vector2 } from "three";
+import NoiseControls from "./sandbox/NoiseControls";
+
 
 const canvas = document.createElement("canvas");
 
@@ -36,16 +38,18 @@ function resizeCanvas() {
  ~39min
 */
 
+NoiseControls.create();
+
 window.addEventListener("resize", resizeCanvas)
 document.body.appendChild(canvas);
 
-MyNoise.regenerate()
+// MyNoise.regenerate()
 draw()
 
 
 function draw() {
 
-  let dotSize  = 5
+  let dotSize  = 2
   if (canvas.getContext) {
     const ctx = canvas.getContext("2d");
   
@@ -87,14 +91,14 @@ function draw() {
   
         let current = new Vector2(
           MyNoise.mapRange(i, 0, MyNoise.arr.length, 0, canvas.width),
-          MyNoise.mapRange(MyNoise.arr[i], 0, 100, 0, canvas.height)
+          MyNoise.mapRange(MyNoise.arr[i], 0, 1, 0, canvas.height)
         );
   
         if (i > 0) {
           ctx.strokeStyle = "#00FF00";
           let last = new Vector2(
             MyNoise.mapRange(i - 1, 0, MyNoise.arr.length, 0, canvas.width),
-            MyNoise.mapRange(MyNoise.arr[i - 1], 0, 100, 0, canvas.height)
+            MyNoise.mapRange(MyNoise.arr[i - 1], 0, 1, 0, canvas.height)
           );
           ctx.beginPath();
           ctx.moveTo(last.x, last.y);
@@ -125,7 +129,7 @@ function draw() {
         // console.log("CURRENT")
         let current = new Vector2(
           MyNoise.mapRange(i, 0, 1, 0, canvas.width),
-          MyNoise.mapRange(v, 0, 100, 0, canvas.height)
+          MyNoise.mapRange(v, 0, 1, 0, canvas.height)
         );
   
         if (i > 0) {
@@ -133,8 +137,9 @@ function draw() {
           ctx.strokeStyle = "#0000FF";
           let last = new Vector2(
             MyNoise.mapRange(i - steps, 0, 1, 0, canvas.width),
-            MyNoise.mapRange(MyNoise.noise(i - steps), 0, 100, 0, canvas.height)
+            MyNoise.mapRange(MyNoise.noise(i - steps), 0, 1, 0, canvas.height)
           );
+          ctx.lineWidth = 2
           ctx.beginPath();
           ctx.moveTo(last.x, last.y);
           ctx.lineTo(current.x, current.y);
@@ -235,16 +240,7 @@ let precision = 1;
 //   document.body.appendChild(d)
 // }
 
-/*
-Todo : 
-  G�rer la dispersion :
-    - Recevoir une variable entre 0 et 1 (0 = aucune dispersion = ligne droite, 1 = totalement disperser = chaotique)
-    - Et chaque valeur suivante devra �tre un facteur en -dispersion et +dispersion de la valeur pr�c�dente
-  G�rer la pr�cision
-    - Cr�er un valeur interm�diaire entre 2 valeurs qui est �loign�e de +/- dispersion
-  G�rer la fr�quence ?
-  G�rer l'amplitude ? (dispersion ?)
-*/
+
 
 // console.log("noise", noise(.1))
 // console.log("noise", noise(1))
