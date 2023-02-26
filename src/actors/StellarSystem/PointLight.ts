@@ -2,12 +2,12 @@ import GeometryUtils from "@/utils/GeometryUtils";
 import { PointLight as ThreePointLight, Vector3 } from "three";
 import Actor from "@actors/Actor";
 
-import { _ActorOptions } from "@types";
+import { _ActorOptionsInterface } from "@types";
 import MathUtils from "@utils/MathUtils";
 
 class PointLight extends Actor {
 
-    constructor(options? :_ActorOptions) {
+    constructor(options? :_ActorOptionsInterface) {
         super(options)
     }
 

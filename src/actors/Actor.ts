@@ -1,5 +1,6 @@
-import { _ActorOptions, _Entity } from "@types"
-import { BoxGeometry, BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "three"
+import { _ActorOptionsInterface, _Entity } from "@types"
+import { BoxGeometry, BufferGeometry, Material, Mesh, MeshBasicMaterial, Object3D } from "three"
+import { generateUUID } from "three/src/math/MathUtils"
 
 /*
     Todo : Créer les écouteurs "onSpawn", "onCreate", "onUpdate"
@@ -8,18 +9,22 @@ import { BoxGeometry, BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "
 class Actor implements _Entity {
 
     geometry: BufferGeometry | null
-    material: MeshBasicMaterial | null
+    material: Material | null
     object: Object3D | null
 
-    children: _Entity[]
-    options?: _ActorOptions
+    children: Actor[]
+    options?: _ActorOptionsInterface
+    name: string
 
+    isRigidBody: boolean = false
 
-	constructor(options?: _ActorOptions) {
-        this.geometry = null
-        this.material = null
+	constructor(options?: _ActorOptionsInterface) {
+        this.geometry = this.options?.geometry || null
+        this.material = this.options?.material || null
         this.object = null
         this.children = []
+
+        this.name = generateUUID()
 
         if (options) {
             this.options = options
@@ -28,15 +33,22 @@ class Actor implements _Entity {
         this.create()
     }
 
-    add(entity: _Entity) :this {
-        console.log("this", this)
+    add(entity: Actor) :this {
         this.children.push(entity)
         return this
     }
 	
     create() :void {}
 	spawn() :void {}
-	update(): void {}
+	
+    updateLoop(tick: number): void {
+        this.updateRigidBody(tick)
+        this.update(tick)
+    }
+
+    updateRigidBody(tick: number) :void {}
+    update(tick: number) :void {}
+    
 }
 
 export default Actor

@@ -1,6 +1,7 @@
 import { BoxGeometry, Mesh, MeshPhongMaterial } from "three";
 import Actor from "@actors/Actor";
 import Noise from "@utils/Noise/Noise";
+import MyNoise from "@utils/Noise/MyNoise";
 
 
 class Star extends Actor {
@@ -20,13 +21,16 @@ class Star extends Actor {
 		this.object = new Mesh(this.geometry, this.material)
 
         this.object.rotation.x = .5
+        MyNoise.regenerate()
         
     }
 
     update () {
 
-        let t = Noise.perlinNoise(this.tmp, .8, 0.5)
-        this.tmp += .01
+        let t = MyNoise.noise(this.tmp)
+
+        console.log(this.tmp,t)
+        this.tmp += .001
 
         if (this.object) {
             this.object.rotation.y += t / 20

@@ -1,19 +1,17 @@
-import { WebGLRenderer, Scene as ThreeScene, PerspectiveCamera } from "three"
+import { WebGLRenderer, Scene as ThreeScene, PerspectiveCamera, LineSegments, WireframeGeometry, SphereGeometry } from "three"
 import SceneManager from "@/SceneManager"
 
 class Scene {
 	tick: number
-	renderer: WebGLRenderer | null
-	camera: PerspectiveCamera | null
-	scene: ThreeScene | null
+	renderer: WebGLRenderer
+	camera: PerspectiveCamera
+	scene: ThreeScene
 
 	sceneManager: SceneManager
 
 	constructor() {
 		this.tick = 0
-		this.renderer = null
-		this.camera = null
-		this.scene = null
+
 
 		if (window.requestAnimationFrame === undefined) {
 			throw new Error("L'API 'requestAnimationFrame' ne fonctionne pas sur ce navigateur")
@@ -24,7 +22,7 @@ class Scene {
 			80,
 			window.innerWidth / window.innerHeight,
 			0.1,
-			1000
+			5000
 		)
 		
 
@@ -41,8 +39,13 @@ class Scene {
 		})
 
 		if (this.camera) {
-			this.camera.position.z = 40
+			this.camera.position.y = 0
+			this.camera.position.z = 750
+			this.camera.rotation.x = 0
+
 		}
+
+
 
 		document.body.appendChild(this.renderer.domElement)
 
@@ -52,25 +55,23 @@ class Scene {
 		this.loop()
 	}
 
-	loop(tick?: number): void {
-		if (tick) {
-			this.tick = tick
-		}
+	loop(): void {
+		this.tick++
 
-		this.update()
-		this.sceneManager.update();
+		this.update(this.tick)
+		this.sceneManager.update(this.tick);
 
 		if (this.renderer && this.scene && this.camera) {
-			
 			this.renderer.render(this.scene, this.camera)
 		}
 
-		setTimeout(() => {
+		// setTimeout(() => {
 			window.requestAnimationFrame(this.loop.bind(this))
-		}, 0);
+		// }, 100)
+		
 	}
 
-	update(): void {}
+	update(tick: number): void {}
 	init(): void {}
 }
 

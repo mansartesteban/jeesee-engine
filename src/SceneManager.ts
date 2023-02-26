@@ -1,10 +1,11 @@
+import Actor from "@actors/Actor";
 import { _Entity } from "@types";
 import { Mesh, Object3D, Scene as ThreeScene } from "three";
 
 
 class SceneManager {
 
-    entities: _Entity[];
+    entities: Actor[];
     threeScene: ThreeScene;
 
     constructor(threeScene: ThreeScene) {
@@ -12,19 +13,25 @@ class SceneManager {
         this.threeScene = threeScene
     }
 
-    add(entity: _Entity) {
+    add(entity: Actor, name?: string) {
         let $this = this
+
+        if (name) entity.name = name
+
         if (entity.children) {
-            console.log("entity has children", entity.children)
             entity.children.forEach(child => $this.add(child))
         }
         this.entities.push(entity)
         this.threeScene.add(entity.object as Object3D)
     }
 
-    update() {
+    get(name: string) {
+        return this.entities.find(entity => entity.name === name)
+    }
+
+    update(tick: number) {
         this.entities.forEach(entity => {
-            entity.update()
+            entity.updateLoop(tick)
         })
     }
 

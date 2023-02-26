@@ -1,5 +1,5 @@
 import Scene from "@/Scene"
-import MainScene from "@/scenes/MainScene"
+import PhysicsEngineScene from "@/scenes/PhysicsEngine/PhysicsEngineScene"
 
 class Game {
 	scene: Scene | null
@@ -9,7 +9,7 @@ class Game {
 	}
 
 	start() {
-		this.scene = new MainScene()
+		this.scene = new PhysicsEngineScene()
 	}
 }
 

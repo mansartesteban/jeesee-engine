@@ -1,5 +1,5 @@
 import Game from "@/Game";
-import { Object3D, Vector3 } from "three";
+import { BufferGeometry, Material, Object3D, Vector3 } from "three";
 
 declare global {
     var __auralux__: {
@@ -25,20 +25,35 @@ type _LocalObserver = {
 }
 
 interface _Entity {
+    name: string
     object: Object3D | null
     children: _Entity[]
     options?: _ActorOptions,
-    update() :void;
+    updateLoop(tick: number) :void;
 }
 
 type _ActorOptions = {
     position?: Vector3,
     rotation?: Vector3,
     scale?: Vector3
+
+    material?: Material,
+    geometry?: BufferGeometry
 }
 
+type _RigidBodyOptions = {
+    gravity?: boolean,
+    mass?: number,
+    enableCollision?: boolean,
+    enableCollisionResponse?: boolean,
+    gravityOrigin?: Vector3
+    
+}
+
+interface _ActorOptionsInterface extends _ActorOptions, _RigidBodyOptions {}
+
 export {
-    _ActorOptions,
+    _ActorOptionsInterface,
     _Entity,
     _Observer,
     _LocalObserver
