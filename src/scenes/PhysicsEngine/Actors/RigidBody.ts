@@ -74,7 +74,7 @@ class RigidBody extends Actor {
                 if (this.object && entity !== this) { // Ne pas calculer sur l'entité en cours
 
                     
-                    if (entity && entity.object && entity.geometry && entity instanceof RigidBody) {
+                    if (entity && entity.object && entity.geometry && entity instanceof RigidBody && this instanceof RigidBody) {
                         
                         // Calcule les collisions si elles sont activées
                         if (this.options.enableCollision) {
@@ -130,7 +130,33 @@ class RigidBody extends Actor {
         Todo :
         - Pouvoir indiquer la source de la gravité
         - Ajouter des type de collision et appliquer des calculs différents (sphere, capsule, plan)
+            - Pour chaque RigidBody, avoir un tableau de "collisionResolvers"
+            - Chaque collision resolver sera responsable de sa propre "réponse" à la collision
+            - Les exécuter tous avant d'update la position
         - Ajouter des contraintes (liaison entre les objets)
+
+        - Ajouter une option pour le type de gravité 
+            - directional : 
+                - par défaut sur l'axe -y,
+                - sinon un vecteur qui sera la direction
+            - space? : tous les objets s'attirent entre eux
+                - par défaut avec une force de 1
+                - sinon indiquer la masse en "auto", elle sera de la valeur du volume
+                - sinon accepter une valeur
+
+        - Trouver un moyen plus propre de récupérer le scene manager que window?.__auralux__
+
+        Priorité :
+        - Créer une class qui permet d'avoir des champs modifiables et reliés à une valeur d'un actor ou d'autres valeurs plus globales (tick, scene manager ...)
+            - Récupérer toutes les propriétés publics de chaque objet
+            - Avoir une arborescence des objets (actor) dans la scene et pour les déplier pour accéder à leur valeur modifiables
+        - Création de scene
+            - Bouton "+" créer un scene
+            - Pouvoir cliquer glisser des actors dans la scene
+            - Chaque nouvel actor est ajouté a scene manager et les inputs modifiant ses propriétés internes seront disponible
+            - Pouvoir modifier la scene et modifier le code en direct sans que la scene ne se recharge
+            - Enregistrer l'état de la scene pour pouvoir revenir dessus quand on veut
+
     */
 
     applyGravity() {
@@ -150,6 +176,7 @@ class RigidBody extends Actor {
                         if (entity !== this && entity.object && entity instanceof RigidBody && this.object) {
 
                             let dist = entity.object.position.distanceTo(this.object.position)
+                            if (dist < 0.001) console.log("ARGH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                             let forceDirection = entity.object.position.clone().sub(this.object.position).normalize()
                             let force = forceDirection.multiplyScalar(this.gravityConstant * this.mass * entity.mass).divideScalar(dist * dist)
                             let acceleration = force.divideScalar(this.mass)

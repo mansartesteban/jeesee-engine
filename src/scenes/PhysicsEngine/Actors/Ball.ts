@@ -15,12 +15,12 @@ import {
 } from "three"
 import RigidBody from "./RigidBody"
 
-class Ball extends RigidBody {
+class Ball extends Actor {
 
 	constructor(options: _ActorOptionsInterface) {
 		super(options)
 
-		this.velocity = new Vector3(0, 100, 0)
+		// this.velocity = new Vector3(0, 100, 0)
 	}
 
 	create() {
@@ -67,13 +67,24 @@ class Ball extends RigidBody {
 
 		window.addEventListener("keypress", (e) => {
 			if (e.key == " ") {
-				this.options.enableCollision = !this.options.enableCollision
+				// this.options.enableCollision = !this.options.enableCollision
 			}
 		})
+
+		
+		let elem = document.getElementById("position")
+		if (elem) {
+			elem.addEventListener("input", (e: any) => {
+				console.log("e", e)
+				if (this.object && e.target) {
+					this.object.position.x = e.target.value
+				}
+			})
+		}
 	}
 
 	update() {
-		console.log(this.velocity)
+		// console.log(this.velocity)
 	}
 
 }
