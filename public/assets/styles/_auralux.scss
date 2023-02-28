@@ -35,13 +35,44 @@ canvas {
   right: 0;
   padding: 1em;
   background: #171924;
-  font-size: 16px;
-  min-width: 150px;
-  max-width: 20%;
+  font-size: 14px;
+  min-width: 200px;
+  max-width: 25%;
   height: 100vh;
+  overflow: auto;
 
   #entity-tree {
     border: 1px solid red;
+    overflow-y: auto;
+
+    .tree-node {
+
+      display: flex;
+      align-items: center;
+      padding: .2em .35em;
+
+      &.expanded {
+        .toggle-icon svg {
+          transform: rotate(180deg);
+        }
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, .2);
+        cursor: pointer;
+      }
+
+      .node-sublabel {
+        margin-left: .5em;
+        font-size: .75em;
+        color: grey;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+    }
+
   }
 
   input {
@@ -52,4 +83,13 @@ canvas {
     padding: .2em .35em;
   }
 
+}
+
+.treeview-node .bi {
+  padding: 0.5em;
+}
+
+.treeview-node {
+  cursor: pointer;
+  padding: 0.5em;
 }

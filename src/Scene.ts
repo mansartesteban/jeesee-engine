@@ -50,7 +50,7 @@ class Scene {
 
 		if (this.camera) {
 			this.camera.position.y = 0
-			this.camera.position.z = 750
+			this.camera.position.z = 250
 			this.camera.rotation.x = 0
 
 		}
@@ -62,6 +62,10 @@ class Scene {
 		this.sceneManager = new SceneManager(this.scene)
 
 		this.guiControls = new GuiControls(this.sceneManager)
+
+		this.guiControls.observer.$on(GuiControls.EVENTS.NODE_SELECTED, (node: any) => {
+			console.log("selected", node)
+		})
 
 		this.init()
 		this.loop()

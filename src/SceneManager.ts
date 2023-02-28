@@ -3,39 +3,59 @@ import { _Entity } from "@types";
 import { Mesh, Object3D, Scene as ThreeScene } from "three";
 import Observer from "./Observer";
 
+// TODO: Vérifier si les names des entity sont bien uniques
 
 class SceneManager {
-  entities: Actor[];
-  threeScene: ThreeScene;
-
-  EVENTS = Object.freeze({
+  
+  static EVENTS = Object.freeze({
     ENTITY_ADDED: "ENTITY_ADDED",
     ENTITY_DELETED: "ENTITY_DELETED",
   });
-  observer: Observer = new Observer(this.EVENTS)
+  
+  entities: Actor[];
+  threeScene: ThreeScene;
+  
+  observer: Observer = new Observer(SceneManager.EVENTS)
 
   constructor(threeScene: ThreeScene) {
     this.entities = [];
     this.threeScene = threeScene;
-  }
 
+  }
   // TODO: fonction delete (avec observer et $emit)
 
-  add(entity: Actor, name?: string) {
+  delete(entityName: string) {
+    let foundIndex = this.entities.findIndex(entity => entity.name === entityName)
+    if (foundIndex !== -1) {
+
+      let entityFound = this.entities[foundIndex]
+
+      if (entityFound.object) {
+        this.threeScene.remove(entityFound.object)
+        entityFound.object.remove()
+        entityFound.object.clear()
+        delete this.entities[foundIndex]
+        this.entities.splice(foundIndex, 1)
+        this.observer.$emit(SceneManager.EVENTS.ENTITY_DELETED)
+      }
+    }
+  }
+
+  add(entity: Actor, entityName?: string) {
     let $this = this;
 
-    if (name) entity.name = name;
+    if (entityName) entity.name = entityName;
 
     if (entity.children) {
       entity.children.forEach((child) => $this.add(child));
     }
     this.entities.push(entity);
     this.threeScene.add(entity.object as Object3D);
-    this.observer.$emit(this.EVENTS.ENTITY_ADDED)
+    this.observer.$emit(SceneManager.EVENTS.ENTITY_ADDED)
   }
 
-  get(name: string) {
-    return this.entities.find((entity) => entity.name === name);
+  get(entityName: string) {
+    return this.entities.find((entity) => entity.name === entityName);
   }
 
   update(tick: number) {

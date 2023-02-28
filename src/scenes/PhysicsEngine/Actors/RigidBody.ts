@@ -48,8 +48,6 @@ class RigidBody extends Actor {
         if (this.geometry) {
             this.mass = (4/3) * Math.PI * Math.pow((this.geometry as SphereGeometry).parameters.radius / 2, 3)
         }
-
-        console.log(this, this.mass)
     }
 
     updateRigidBody(tick: number) {
@@ -170,20 +168,20 @@ class RigidBody extends Actor {
             if (this.options && this.options.gravity) {
 
                 if (window.__auralux__.game.scene?.sceneManager) {
-                    let entities = window.__auralux__.game.scene?.sceneManager.entities
-                    entities.forEach(entity => {
+                    // let entities = window.__auralux__.game.scene?.sceneManager.entities
+                    // entities.forEach(entity => {
                         
-                        if (entity !== this && entity.object && entity instanceof RigidBody && this.object) {
+                    //     if (entity !== this && entity.object && entity instanceof RigidBody && this.object) {
 
-                            let dist = entity.object.position.distanceTo(this.object.position)
-                            if (dist < 0.001) console.log("ARGH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                            let forceDirection = entity.object.position.clone().sub(this.object.position).normalize()
-                            let force = forceDirection.multiplyScalar(this.gravityConstant * this.mass * entity.mass).divideScalar(dist * dist)
-                            let acceleration = force.divideScalar(this.mass)
+                    //         let dist = entity.object.position.distanceTo(this.object.position)
+                    //         if (dist < 0.001) console.log("ARGH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    //         let forceDirection = entity.object.position.clone().sub(this.object.position).normalize()
+                    //         let force = forceDirection.multiplyScalar(this.gravityConstant * this.mass * entity.mass).divideScalar(dist * dist)
+                    //         let acceleration = force.divideScalar(this.mass)
 
-                            this.velocity.add(acceleration.multiplyScalar(.5))
-                        }
-                    })
+                    //         this.velocity.add(acceleration.multiplyScalar(.5))
+                    //     }
+                    // })
 
                 }
                 // let gravity = this.gravityOrigin.clone().sub(this.object.position).normalize().multiplyScalar(this.gravityConstant)

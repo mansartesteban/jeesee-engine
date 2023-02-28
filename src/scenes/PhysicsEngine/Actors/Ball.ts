@@ -13,6 +13,7 @@ import {
 	Vector3,
 	WireframeGeometry,
 } from "three"
+import Cube from "./Cube"
 import RigidBody from "./RigidBody"
 
 class Ball extends Actor {
@@ -50,6 +51,11 @@ class Ball extends Actor {
 		this.object.position.z = 100
 
 
+		for (let i = 0; i < 25 ; i++) {
+			this.add(new Cube())
+		}
+
+
 		// this.velocity = new Vector3(1, 0, 0)
 		// this.object.position.x = 10
 		// this.object.position.z = 0
@@ -84,6 +90,9 @@ class Ball extends Actor {
 	}
 
 	update() {
+		if (this.object) {
+			this.object.rotation.x+=.01
+		}
 		// console.log(this.velocity)
 	}
 

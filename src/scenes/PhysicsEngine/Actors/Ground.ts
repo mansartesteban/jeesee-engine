@@ -3,7 +3,7 @@ import { _ActorOptionsInterface } from "@types";
 import { Mesh, MeshPhongMaterial, PlaneGeometry, SphereGeometry } from "three";
 import RigidBody from "./RigidBody";
 
-class Ground extends RigidBody {
+class Ground extends Actor {
 
     constructor(options?: _ActorOptionsInterface) {
         super(options)
@@ -16,8 +16,12 @@ class Ground extends RigidBody {
         this.geometry = new SphereGeometry(radius, 50, 25)
         this.material = new MeshPhongMaterial({ color: "#00FF00" })
         this.object = new Mesh(this.geometry, this.material)
+
+        console.log(this.object.position)
     
     }
+
+
 
 }
 

@@ -39,12 +39,7 @@ class Observer implements _Observer {
   }
 
   isValidEvent(event: string) {
-    const C = class C {
-      static events: {};
-    };
-    let constructorClass = this["constructor"] as typeof C;
-
-    if (!Object.values(constructorClass.events).includes(event))
+    if (!Object.keys(this.events).includes(event))
       throw new Error(`Event '${event}' is not a valid event`);
   }
 }

@@ -13,4 +13,4 @@ window.__auralux__ = {
 }
 
 game.start() 
-// TODO: Par l'avenir il faudra changer en engine.start(), ce n'est plus le jeu que je veux démarrer mais le moteur de jeu
+// TODO: Par l'avenir il faudra changer en engine.start(), ce n'est plus le jeu que je veux dÃ©marrer mais le moteur de jeu
