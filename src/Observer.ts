@@ -1,53 +1,52 @@
 import { _LocalObserver, _Observer } from "@types"
 
 class Observer implements _Observer {
+  observers: _LocalObserver[];
+  events: {[key: string]: string} = {};
 
-    observers: _LocalObserver[]
-    event: [] = []
+  constructor(events: {[key: string]: string}) {
+    this.observers = [];
+    this.events = events;
+  }
 
-    constructor() {
-        this.observers = []
-    }
+  $on(event: string, callback: Function): this {
+    this.isValidEvent(event);
 
-    $on(event: string, callback: Function): this {
+    this.observers.push({
+      event,
+      callback,
+    });
 
-        this.isValidEvent(event)
+    return this;
+  }
 
-        this.observers.push({
-            event,
-            callback
-        })
+  unset(observer: _LocalObserver): this {
+    this.observers = this.observers.filter(function (item) {
+      if (item !== observer) {
+        return item;
+      }
+    });
+    return this;
+  }
 
-        return this
-    }
+  $emit(event: string, ...args: any[]): this {
+    this.observers
+      .filter((observer: _LocalObserver) => observer.event === event)
+      .forEach((observer) => {
+        observer.callback(...args);
+      });
+    return this;
+  }
 
-    unset(observer: _LocalObserver): this {
-        this.observers = this.observers.filter(
-            function (item) {
-                if (item !== observer) {
-                    return item
-                }
-            }
-        )
-        return this
-    }
+  isValidEvent(event: string) {
+    const C = class C {
+      static events: {};
+    };
+    let constructorClass = this["constructor"] as typeof C;
 
-    $emit(event: string, ...args: any[]): this {
-        this.observers
-            .filter((observer: _LocalObserver) => observer.event === event)
-            .forEach(observer => {
-                observer.callback(...args)
-            })
-        return this
-    }
-
-    isValidEvent(event: string) {
-        const C = class C {static events: {}}
-        let constructorClass = this["constructor"] as typeof C
-
-        if (!Object.values(constructorClass.events).includes(event))
-            throw new Error(`Event '${event}' is not a valid event`)
-    }
+    if (!Object.values(constructorClass.events).includes(event))
+      throw new Error(`Event '${event}' is not a valid event`);
+  }
 }
 
 export default Observer

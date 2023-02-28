@@ -1,5 +1,6 @@
 import { WebGLRenderer, Scene as ThreeScene, PerspectiveCamera, LineSegments, WireframeGeometry, SphereGeometry } from "three"
 import SceneManager from "@/SceneManager"
+import GuiControls from "./gui/GuiControls"
 
 class Scene {
 	tick: number
@@ -8,6 +9,7 @@ class Scene {
 	scene: ThreeScene
 
 	sceneManager: SceneManager
+	guiControls: GuiControls
 
 	constructor() {
 		this.tick = 0
@@ -17,23 +19,31 @@ class Scene {
 			throw new Error("L'API 'requestAnimationFrame' ne fonctionne pas sur ce navigateur")
 		}
 
+		let controls = document.getElementById("controls")
+
+		let controlsWidth = controls?.clientWidth || 0
+
 		this.scene = new ThreeScene()
 		this.camera = new PerspectiveCamera(
 			80,
-			window.innerWidth / window.innerHeight,
+			(window.innerWidth - controlsWidth) / window.innerHeight,
 			0.1,
 			5000
 		)
 		
 
 		this.renderer = new WebGLRenderer({antialias: true})
-		this.renderer.setSize(window.innerWidth, window.innerHeight)
+		this.renderer.setSize(window.innerWidth - controlsWidth, window.innerHeight)
 		window.addEventListener("resize", () => {
+			let controls = document.getElementById("controls");
+      let controlsWidth = controls?.clientWidth || 0;
+
 			if (this.renderer !== null) {
-				this.renderer.setSize(window.innerWidth, window.innerHeight)
+				this.renderer.setSize(window.innerWidth - controlsWidth, window.innerHeight)
 			}
 			if (this.camera !== null) {
-				this.camera.aspect = window.innerWidth / window.innerHeight
+				this.camera.aspect =
+          (window.innerWidth - controlsWidth) / this.renderer.domElement.height;
 				this.camera.updateProjectionMatrix()
 			}			
 		})
@@ -50,6 +60,8 @@ class Scene {
 		document.body.appendChild(this.renderer.domElement)
 
 		this.sceneManager = new SceneManager(this.scene)
+
+		this.guiControls = new GuiControls(this.sceneManager)
 
 		this.init()
 		this.loop()
