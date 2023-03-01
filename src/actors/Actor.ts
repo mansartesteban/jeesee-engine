@@ -1,4 +1,4 @@
-import { _ActorOptionsInterface, _Entity } from "@types"
+import { IActorOptionsInterface, IEntity } from "@types"
 import { BoxGeometry, BufferGeometry, Material, Mesh, MeshBasicMaterial, Object3D } from "three"
 import { generateUUID } from "three/src/math/MathUtils"
 
@@ -6,21 +6,21 @@ import { generateUUID } from "three/src/math/MathUtils"
     Todo : Créer les écouteurs "onSpawn", "onCreate", "onUpdate"
 */
 
-class Actor implements _Entity {
+class Actor implements IEntity {
 
     geometry: BufferGeometry | null
     material: Material | null
     object: Object3D | null
 
     children: Actor[]
-    options?: _ActorOptionsInterface
+    options?: IActorOptionsInterface
     
     name: string
     parent: string | null
 
     isRigidBody: boolean = false
 
-	constructor(options?: _ActorOptionsInterface) {
+	constructor(options?: IActorOptionsInterface) {
         this.geometry = this.options?.geometry || null
         this.material = this.options?.material || null
         this.object = null

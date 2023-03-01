@@ -1,5 +1,5 @@
 interface Window {
-  __auralux__: number
+  __jeesee__: number
 }
 
 export {

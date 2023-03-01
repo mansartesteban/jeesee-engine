@@ -1,5 +1,5 @@
 import Actor from "@actors/Actor";
-import { _Entity } from "@types";
+import { IEntity } from "@types";
 import { Mesh, Object3D, Scene as ThreeScene } from "three";
 import Observer from "./Observer";
 

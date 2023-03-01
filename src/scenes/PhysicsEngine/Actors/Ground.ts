@@ -1,11 +1,11 @@
 import Actor from "@actors/Actor";
-import { _ActorOptionsInterface } from "@types";
+import { IActorOptionsInterface } from "@types";
 import { Mesh, MeshPhongMaterial, PlaneGeometry, SphereGeometry } from "three";
 import RigidBody from "./RigidBody";
 
 class Ground extends Actor {
 
-    constructor(options?: _ActorOptionsInterface) {
+    constructor(options?: IActorOptionsInterface) {
         super(options)
     }
 

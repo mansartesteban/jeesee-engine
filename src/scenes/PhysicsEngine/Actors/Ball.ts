@@ -1,5 +1,5 @@
 import Actor from "@actors/Actor"
-import { _ActorOptionsInterface } from "@types"
+import { IActorOptionsInterface } from "@types"
 import MathUtils from "@utils/MathUtils"
 import {
 	BufferGeometry,
@@ -18,7 +18,7 @@ import RigidBody from "./RigidBody"
 
 class Ball extends Actor {
 
-	constructor(options: _ActorOptionsInterface) {
+	constructor(options: IActorOptionsInterface) {
 		super(options)
 
 		// this.velocity = new Vector3(0, 100, 0)

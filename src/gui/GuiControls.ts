@@ -1,14 +1,17 @@
 import Observer from "@/Observer";
 import SceneManager from "@/SceneManager";
-import { _Entity } from "@types";
+import { IEntity } from "@types";
 
 
 //TODO: Trouver un autre nom
 //TODO: ImplÃ©menter la copie d'ID
 //TODO: Pouvoir recherche dans la liste par nom ou ID
-//TODO: Pouvoir renger les entitÃ©s dans des dossiers et sauvegarder l'Ã©tat de l'arbre
-//TODO: Trouver comment pallier au problÃ¨mes des Ã©lÃ©ments enfants en doublon (qui se situent dans sceneManager mais aussi au sein de ball)
-//TODO: Renommer le projet auralux (et toutes les variables) en Jeez Engine
+//TODO: Pouvoir ranger les entitÃ©s dans des dossiers et sauvegarder l'Ã©tat de l'arbre
+//TODO: Renommer le projet jeesee (et toutes les variables) en jeesee Engine
+
+
+
+//TODO: Ne pas oublier que j'ai retiré la div "#controls" du index.html
 
 class GuiControls {
 
@@ -50,7 +53,7 @@ class GuiControls {
 
   }
 
-  transformEntities(entities: _Entity[], parent: _Entity | null) :any[] {
+  transformEntities(entities: IEntity[], parent: IEntity | null) :any[] {
     return entities
       .filter(entity => (entity.parent && parent && entity.parent === parent.name) || !entity.parent)
       .map((entity) => {

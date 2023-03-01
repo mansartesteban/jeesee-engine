@@ -1,6 +1,6 @@
-import { _LocalObserver, _Observer } from "@types"
+import { _LocalObserver, IObserver } from "@types"
 
-class Observer implements _Observer {
+class Observer implements IObserver {
   observers: _LocalObserver[];
   events: {[key: string]: string} = {};
 

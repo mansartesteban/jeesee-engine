@@ -1,10 +1,10 @@
 import Actor from "@actors/Actor"
-import { _ActorOptionsInterface } from "@types"
+import { IActorOptionsInterface } from "@types"
 import { Object3D, SphereGeometry, Vector3 } from "three"
 
 class RigidBody extends Actor {
 
-    options: _ActorOptionsInterface = {
+    options: IActorOptionsInterface = {
         gravity: true,
         gravityOrigin: new Vector3(0, 0, 0), // Passer plutôt une entity directement et elle aura sa masse, son centre, sa force et ses propres constantes
         mass: 1,
@@ -29,7 +29,7 @@ class RigidBody extends Actor {
     // _acceleration: number = 0
     // _lastPosition: number = 1
 
-    constructor(options?: _ActorOptionsInterface) {
+    constructor(options?: IActorOptionsInterface) {
         super(options)
 
         if (options) {
@@ -62,8 +62,8 @@ class RigidBody extends Actor {
 
     calculateCollision() {
 
-        if (window.__auralux__.game.scene?.sceneManager) {
-            let entities = window.__auralux__.game.scene?.sceneManager.entities
+        if (window.__jeesee__.game.scene?.sceneManager) {
+            let entities = window.__jeesee__.game.scene?.sceneManager.entities
 
             let radius = (this.geometry as SphereGeometry).parameters.radius
 
@@ -142,7 +142,7 @@ class RigidBody extends Actor {
                 - sinon indiquer la masse en "auto", elle sera de la valeur du volume
                 - sinon accepter une valeur
 
-        - Trouver un moyen plus propre de récupérer le scene manager que window?.__auralux__
+        - Trouver un moyen plus propre de récupérer le scene manager que window?.__jeesee__
 
         Priorité :
         - Créer une class qui permet d'avoir des champs modifiables et reliés à une valeur d'un actor ou d'autres valeurs plus globales (tick, scene manager ...)
@@ -167,8 +167,8 @@ class RigidBody extends Actor {
             // Check if gravity is enabled on this object
             if (this.options && this.options.gravity) {
 
-                if (window.__auralux__.game.scene?.sceneManager) {
-                    // let entities = window.__auralux__.game.scene?.sceneManager.entities
+                if (window.__jeesee__.game.scene?.sceneManager) {
+                    // let entities = window.__jeesee__.game.scene?.sceneManager.entities
                     // entities.forEach(entity => {
                         
                     //     if (entity !== this && entity.object && entity instanceof RigidBody && this.object) {

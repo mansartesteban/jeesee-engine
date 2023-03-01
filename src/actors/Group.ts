@@ -1,5 +1,5 @@
 import Actor from "@actors/Actor"
-import { _Entity } from "@types"
+import { IEntity } from "@types"
 import { Object3D, Group as ThreeGroup } from "three"
 
 class Group extends Actor {

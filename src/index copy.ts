@@ -1,5 +1,5 @@
 import "@assets/styles/_reset.scss";
-import "@assets/styles/_auralux.scss";
+import "@assets/styles/_jeesee.scss";
 
 // import "@types/window"
 
@@ -193,7 +193,7 @@ window.addEventListener("mousemove", (ev: MouseEvent) => {
 
 // const game = new Game()
 
-// window.__auralux__ = {
+// window.__jeesee__ = {
 //     game: game,
 //     helpers: {
 //     }
