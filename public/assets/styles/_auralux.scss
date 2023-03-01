@@ -1,3 +1,20 @@
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
 
 
 .dot {
@@ -20,49 +37,82 @@ canvas {
   height: 100vh;
 }
 
-#infos {
-  background: #002266;
-  font-family: 'Courier New', Courier, monospace;
-  color: white;
-  padding: .5em;
-  border-radius: 5px;
-  font-size: 12px;
-}
+// #infos {
+//   background: #002266;
+//   font-family: 'Courier New', Courier, monospace;
+//   color: white;
+//   padding: .5em;
+//   border-radius: 5px;
+//   font-size: 12px;
+// }
 
 #controls {
+
   position: fixed;
   top: 0;
   right: 0;
-  padding: 1em;
   background: #171924;
   font-size: 14px;
   min-width: 200px;
   max-width: 25%;
   height: 100vh;
   overflow: auto;
+  font-family: Helvetica, sans-serif;
+  border-left: 2px solid rgba(255, 255, 255, .1);
+
+  & > #entity-tree {
+    max-height: 33vh;
+    overflow-y: auto;
+    border-bottom: 2px solid rgba(255, 255, 255, .1);
+    // padding: 1em;
+  }
+  
 
   #entity-tree {
-    border: 1px solid red;
-    overflow-y: auto;
-
+      // padding-left: 1em;
     .tree-node {
 
-      display: flex;
-      align-items: center;
-      padding: .2em .35em;
+
+      .node-content {
+
+        .node-label {
+          white-space: nowrap;
+        }
+
+        .toggle-icon {
+          display: flex;
+        }
+
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        padding: .2em .35em;
+
+        &.hovered {
+          background: rgba(255, 255, 255, .08);
+          cursor: pointer;
+        }
+
+      }
+
+      #entity-tree {
+        display: none;
+      }
 
       &.expanded {
         .toggle-icon svg {
           transform: rotate(180deg);
         }
-      }
 
-      &:hover {
-        background: rgba(255, 255, 255, .2);
-        cursor: pointer;
+        #entity-tree {
+          display: block
+        }
+
       }
 
       .node-sublabel {
+        font-family: monospace;
         margin-left: .5em;
         font-size: .75em;
         color: grey;

@@ -26,10 +26,11 @@ type _LocalObserver = {
 
 interface _Entity {
     name: string
+    parent: string | null
     object: Object3D | null
     children: _Entity[]
-    options?: _ActorOptions,
-    updateLoop(tick: number) :void;
+    options?: _ActorOptions
+    updateLoop(tick: number) :void
 }
 
 type _ActorOptions = {

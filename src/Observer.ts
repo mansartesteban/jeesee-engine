@@ -9,13 +9,20 @@ class Observer implements _Observer {
     this.events = events;
   }
 
-  $on(event: string, callback: Function): this {
-    this.isValidEvent(event);
+  $on(events: string | string[], callback: Function): this {
+    if (typeof events == "string") {
+      events = [events]
+    }
 
-    this.observers.push({
-      event,
-      callback,
-    });
+    events.forEach(event => {
+      this.isValidEvent(event);
+
+      this.observers.push({
+        event,
+        callback,
+      });
+    })
+    
 
     return this;
   }

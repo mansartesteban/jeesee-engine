@@ -14,7 +14,9 @@ class Actor implements _Entity {
 
     children: Actor[]
     options?: _ActorOptionsInterface
+    
     name: string
+    parent: string | null
 
     isRigidBody: boolean = false
 
@@ -25,6 +27,7 @@ class Actor implements _Entity {
         this.children = []
 
         this.name = generateUUID()
+        this.parent = null
 
         if (options) {
             this.options = options
@@ -34,6 +37,7 @@ class Actor implements _Entity {
     }
 
     add(entity: Actor) :this {
+        entity.parent = this.name
         this.children.push(entity)
         return this
     }

@@ -31,12 +31,12 @@ class SceneManager {
       let entityFound = this.entities[foundIndex]
 
       if (entityFound.object) {
+        this.observer.$emit(SceneManager.EVENTS.ENTITY_DELETED) //TODO: Est-ce qu'il ne faudrait pas que je mette un Promise.all sur $emit ? On pourrait trigger l'évent et faire plusieurs actions dessus avant de le supprimer définitivement
         this.threeScene.remove(entityFound.object)
         entityFound.object.remove()
         entityFound.object.clear()
         delete this.entities[foundIndex]
         this.entities.splice(foundIndex, 1)
-        this.observer.$emit(SceneManager.EVENTS.ENTITY_DELETED)
       }
     }
   }
