@@ -63,7 +63,8 @@ type _BlocLayoutOptions = {
     zIndex?: number,
     resizableX?: boolean,
     resizableY?: boolean,
-    actionBar?: boolean
+    actionBar?: boolean,
+    class?: string
 }
 
 interface IInterfacor {

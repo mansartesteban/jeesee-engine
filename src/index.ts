@@ -8,36 +8,63 @@ import GuiLayout from "./gui/layouts/GuiLayout";
 
 
 
-let layout = new GuiLayout({
-    columns: 150,
-    rows: 150
-})
+let layout = new GuiLayout()
+
+// TopBar
 layout.addBloc({
     x: 0, 
     y: 0, 
-    width: 150,
+    width: 100,
     height: 4,
-    zIndex: 100
+    zIndex: 100,
+    class: "TopBar"
 })
+
+// Left bar
 layout.addBloc({
-    x: 0, 
-    y: 4,
-    width: 15,
-    height: 146
-})
+  x: 0,
+  y: 4,
+  width: 10,
+  height: 96,
+  class: "LeftBar",
+});
+
+
+// Right bar
 layout.addBloc({
-    x: 130,
-    y: 4,
-    width: 20,
-    height: 146
-})
-// layout.createBloc(4, 1, 20, 18)
+  x: 85,
+  y: 4,
+  width: 15,
+  height: 96,
+  class: "RightBar",
+});
+
+// 2nd Right bar
 layout.addBloc({
-    x: 15,
-    y: 120,
-    width: 115,
-    height: 30
-})
+  x: 75,
+  y: 4,
+  width: 4,
+  height: 96,
+  class: "RightBar",
+});
+
+// Bottom bar
+layout.addBloc({
+  x: 10,
+  y: 92,
+  width: 75,
+  height: 8,
+  class: "BottomBar",
+});
+
+// Other
+layout.addBloc({
+  x: 30,
+  y: 30,
+  width: 20,
+  height: 20,
+  class: "Bloc",
+});
 
 // const game = new Game()
 
