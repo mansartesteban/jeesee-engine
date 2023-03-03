@@ -310,12 +310,12 @@ class BlocLayout implements IInterfacor {
 
 	createResizers() {
 		if (this.options.resizableX) {
-			this.createLeftResizer()
+			// this.createLeftResizer()
 			// this.createRightResizer()
 			this.createGenericResizer("right")
 		}
 		if (this.options.resizableY) {
-			this.createTopResizer()
+			// this.createTopResizer()
 			// this.createBottomResizer()
 			this.createGenericResizer("bottom")
 		}
