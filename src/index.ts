@@ -85,10 +85,6 @@ let saveBtn = document.getElementById("save-layout")?.addEventListener("click", 
   document.body.removeChild(a);
 })
 
-// function onChange(event: Event) {
-//   let file = ; (<HTMLInputElement>event.target).files[0];
-// }
-
 let importInput = document.getElementById('import-file')
 if (importInput) {
   importInput.onchange = function (e?: Event) {
