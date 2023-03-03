@@ -1,3 +1,4 @@
+import MiniVector2 from "@/core/geometry/MiniVector2"
 import Observer from "@/Observer"
 import {
 	IInterfacor,
@@ -310,11 +311,13 @@ class BlocLayout implements IInterfacor {
 	createResizers() {
 		if (this.options.resizableX) {
 			this.createLeftResizer()
-			this.createRightResizer()
+			// this.createRightResizer()
+			this.createGenericResizer("right")
 		}
 		if (this.options.resizableY) {
-			this.createBottomResizer()
 			this.createTopResizer()
+			// this.createBottomResizer()
+			this.createGenericResizer("bottom")
 		}
 	}
 
@@ -324,6 +327,107 @@ class BlocLayout implements IInterfacor {
 			this.node.style.right = `${100 - this.position.to.x}vw`
 			this.node.style.top = `${this.position.from.y}vh`
 			this.node.style.bottom = `${100 - this.position.to.y}vh`
+		}
+	}
+
+	createGenericResizer(side: string) {
+
+		// Les variables à utiliser
+		let axe = ["right", "left"].includes(side) ? "x" : "y"
+		let crossAxe = axe === "x" ? "y" : "x"
+
+		// La fonction commence ici
+		if (this.node) {
+			let snapStrength = this.options.snapStrength || 0
+			let resizer = document.createElement("div")
+			resizer.classList.add("resizer", "resizer-" + side)
+
+			this.node.appendChild(resizer)
+
+			resizer.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault()
+				e.stopPropagation()
+				document.body.classList.add("resize-" + axe)
+
+				if (this.node) {
+					this.node.classList.add("resizing-" + side)
+					this.node.classList.toggle("moving", true)
+
+					const mouseMoveHandler = (e: MouseEvent) => {
+						e.preventDefault()
+						e.stopPropagation()
+						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
+						// let mousePosition = new NanoVector2(GuiLayout.getScreenPosition(e.clientX, e.clientY))
+
+						// Ici toute la logique de positionnement
+
+
+
+
+						// =====================================================================================
+
+
+
+
+
+						let pos = (mousePosition[axe as keyof MiniVector2])
+
+						let nearBloc = this.layout.blocs.find(bl =>
+							bl !== this
+							&&
+							Math.abs((mousePosition[axe as keyof MiniVector2] as number) - (bl.position.from[axe as keyof MiniVector2] as number)) < snapStrength
+							&&
+							bl.position.to[crossAxe as keyof MiniVector2] > ((this.position.from[crossAxe as keyof MiniVector2] as number) - snapStrength)
+							&&
+							bl.position.from[crossAxe as keyof MiniVector2] < ((this.position.to[crossAxe as keyof MiniVector2] as number) + snapStrength)
+						)
+						if (nearBloc) {
+							pos = nearBloc.position.from[axe as keyof MiniVector2] as number
+						}
+
+						nearBloc = this.layout.blocs.find(bl =>
+							bl !== this
+							&&
+							Math.abs((mousePosition[axe as keyof MiniVector2] as number) - (bl.position.to[axe as keyof MiniVector2] as number)) < snapStrength
+							&&
+							bl.position.to[crossAxe as keyof MiniVector2] > ((this.position.from[crossAxe as keyof MiniVector2] as number) - snapStrength)
+							&&
+							bl.position.from[crossAxe as keyof MiniVector2] < ((this.position.to[crossAxe as keyof MiniVector2] as number) + snapStrength)
+						)
+						if (nearBloc) {
+							pos = nearBloc.position.to[axe as keyof MiniVector2] as number
+						}
+						if (pos > 100 - snapStrength) {
+							pos = 100
+						}
+						this.position.to[axe as keyof MiniVector2] = pos >= this.position.from[axe as keyof MiniVector2] + snapStrength ? pos : this.position.from[axe as keyof MiniVector2]
+						this.position.size[axe as keyof MiniVector2] = this.position.to[axe as keyof MiniVector2] - this.position.from[axe as keyof MiniVector2]
+
+
+
+						// =====================================================================================
+
+
+
+						this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
+					}
+
+					const mouseUpHandler = (e: MouseEvent) => {
+						e.preventDefault()
+						e.stopPropagation()
+						document.body.classList.toggle("resize-" + axe, false)
+						if (this.node) {
+							this.node.classList.toggle("resizing-" + side, false)
+							this.node.classList.toggle("moving", false)
+						}
+						document.removeEventListener("mousemove", mouseMoveHandler)
+						document.removeEventListener("mouseup", mouseUpHandler)
+					}
+					document.addEventListener("mousemove", mouseMoveHandler)
+					document.addEventListener("mouseup", mouseUpHandler)
+				}
+
+			})
 		}
 	}
 

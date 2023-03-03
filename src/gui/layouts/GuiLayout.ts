@@ -1,3 +1,4 @@
+import MiniVector2 from "@/core/geometry/MiniVector2"
 import { _BlocLayoutOptions, _BlocLayoutPosition, _GridLayoutOptions } from "@types"
 import MathUtils from "@utils/MathUtils"
 import { Vector2 } from "three"
@@ -56,8 +57,8 @@ class GuiLayout {
 
     }
 
-    static getScreenPosition(x: number, y: number): Vector2 {
-        let coordinate = new Vector2(
+    static getScreenPosition(x: number, y: number): MiniVector2 {
+        let coordinate = new MiniVector2(
             MathUtils.mapRange(x, 0, window.innerWidth, 0, 100),
             MathUtils.mapRange(y, 0, window.innerHeight, 0, 100)
         )
