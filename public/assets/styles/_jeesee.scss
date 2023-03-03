@@ -25,6 +25,13 @@
   --error-color: ;
 }
 
+// Accessibility
+:root {
+  --a13y-resizer-size: 12px;
+}
+
+
+
 .resize-y {
   cursor: ns-resize;
 }
@@ -39,8 +46,6 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
-  // position: relative;
-  // grid-gap: 2px;
   
   .layout-bloc {
 
@@ -48,52 +53,51 @@
     box-sizing: border-box;
     resize: both;
     position: absolute;
-    border: 1px solid red;  
-    // background: rgba(0, 0, 0, .25);
   }
 
   .resizable {
-    // position: relative;
-    // transition: all 1s;
-  }
 
-  .resizer {
+    .resizer {
 
-      position: absolute;
-      $resizer-size: 7px;
+        position: absolute;
 
-      &.resizer-right {
-        cursor: ew-resize;
-        height: 100%;
-        right: 0;
-        top: 0;
-        width: $resizer-size;
-      }
-    
-      &.resizer-bottom {
-          bottom: 0;
-          cursor: ns-resize;
-          height: $resizer-size;
-          left: 0;
-          width: 100%;
-      }
-
-      &.resizer-left {
-        cursor: ew-resize;
-        height: 100%;
-        left: 0;
-        top: 0;
-        width: $resizer-size;
-      }
-    
-      &.resizer-top {
+        &.resizer-right {
+          cursor: ew-resize;
+          height: 100%;
+          width: var(--a13y-resizer-size);
           top: 0;
+          right: 0;
+          transform: translateX(calc(var(--a13y-resizer-size) / 2));
+        }
+      
+        &.resizer-bottom {
           cursor: ns-resize;
-          height: $resizer-size;
-          left: 0;
+          height: var(--a13y-resizer-size);
           width: 100%;
-      }
+          bottom: 0;
+          left: 0;
+          transform: translateY(calc(var(--a13y-resizer-size) / 2));
+        }
 
+        &.resizer-left {
+          cursor: ew-resize;
+          height: 100%;
+          width: var(--a13y-resizer-size);
+          top: 0;
+          left: 0;
+          transform: translateX(calc(var(--a13y-resizer-size) / -2));
+        }
+      
+        &.resizer-top {
+          cursor: ns-resize;
+          height: var(--a13y-resizer-size);
+          width: 100%;
+          top: 0;
+          left: 0;
+          transform: translateY(calc(var(--a13y-resizer-size) / -2));
+        }
+
+    }
   }
 
 }

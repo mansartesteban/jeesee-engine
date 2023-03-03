@@ -18,6 +18,7 @@ const randomColor = () => Math.floor(Math.random() * 16777215).toString(16)
 
 // TODO: Plutôt que de calculer les positions des blocs à chaque repostionnement ou chaque resize, avoir une gestion de "constraints"
 // TODO: Vérifier la distance entre les blocs sur les autres axes, ne pas snapper sur les blocs qui ne sont pas proches
+// TODO: Créer les resizer sur les coins
 
 class BlocLayout implements IInterfacor {
 	static EVENTS = Object.freeze({
@@ -30,7 +31,8 @@ class BlocLayout implements IInterfacor {
 		resizableX: true,
 		resizableY: true,
 		actionBar: true,
-		snapStrength: 1.5,
+		snapStrength: 2,
+		resizerSize: 12
 	}
 
 	node: HTMLElement | null = null
@@ -69,6 +71,11 @@ class BlocLayout implements IInterfacor {
 			}
 		}
 
+		// Globaliser les variables d'accessibilité
+		if (this.options.resizerSize) {
+			let root = document.documentElement.style.setProperty("--a13y-resizer-size", this.options.resizerSize + "px")
+		}
+
 		this.layout = layout
 
 		this.createElement()
@@ -82,8 +89,8 @@ class BlocLayout implements IInterfacor {
 			this.node.style.zIndex = this.options.zIndex.toString()
 		}
 
-		//TODO: Only for debug
-		this.node.style.background = "#" + randomColor()
+		// //TODO: Only for debug
+		// this.node.style.background = "#" + randomColor()
 
 		this.observer.$on(
 			[
@@ -103,8 +110,8 @@ class BlocLayout implements IInterfacor {
 	makeMovable() {
 		if (this.node) {
 			this.node.addEventListener("mousedown", (e) => {
+				e.preventDefault()
 				e.stopPropagation()
-				console.log("clicked")
 
 				let originalClick = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 				let deltaClick = new Vector2(
@@ -280,10 +287,12 @@ class BlocLayout implements IInterfacor {
 			this.node.appendChild(resizerRight)
 
 			resizerRight.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault()
 				e.stopPropagation()
 				document.body.classList.add("resize-x")
 
 				const mouseMoveHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
@@ -315,6 +324,7 @@ class BlocLayout implements IInterfacor {
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					document.body.classList.remove("resize-x")
 					document.removeEventListener("mousemove", mouseMoveHandler)
@@ -334,10 +344,12 @@ class BlocLayout implements IInterfacor {
 			this.node.appendChild(resizerLeft)
 
 			resizerLeft.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault()
 				e.stopPropagation()
 				document.body.classList.add("resize-x")
 
 				const mouseMoveHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
@@ -372,6 +384,7 @@ class BlocLayout implements IInterfacor {
 				}
 
 				const mouseUpHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					document.body.classList.remove("resize-x")
 					document.removeEventListener("mousemove", mouseMoveHandler)
@@ -391,10 +404,12 @@ class BlocLayout implements IInterfacor {
 			this.node.appendChild(resizerTop)
 
 			resizerTop.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault()
 				e.stopPropagation()
 				document.body.classList.add("resize-y")
 
 				const mouseMoveHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
@@ -427,6 +442,7 @@ class BlocLayout implements IInterfacor {
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					document.body.classList.remove("resize-y")
 					document.removeEventListener("mousemove", mouseMoveHandler)
@@ -446,10 +462,12 @@ class BlocLayout implements IInterfacor {
 			this.node.appendChild(resizerBottom)
 
 			resizerBottom.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault()
 				e.stopPropagation()
 				document.body.classList.add("resize-y")
 
 				const mouseMoveHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
@@ -482,6 +500,7 @@ class BlocLayout implements IInterfacor {
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
+					e.preventDefault()
 					e.stopPropagation()
 					document.body.classList.remove("resize-y")
 					document.removeEventListener("mousemove", mouseMoveHandler)

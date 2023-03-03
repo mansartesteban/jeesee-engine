@@ -30,7 +30,7 @@ interface IEntity {
     object: Object3D | null
     children: IEntity[]
     options?: _ActorOptions
-    updateLoop(tick: number) :void
+    updateLoop(tick: number): void
 }
 
 type _ActorOptions = {
@@ -65,7 +65,8 @@ type _BlocLayoutOptions = {
     resizableY?: boolean,
     actionBar?: boolean,
     class?: string,
-    snapStrength?: number
+    snapStrength?: number,
+    resizerSize?: number
 }
 
 interface IInterfacor {
@@ -73,14 +74,14 @@ interface IInterfacor {
     createElement(): void
 }
 
-interface IActorOptionsInterface extends _ActorOptions, _RigidBodyOptions {}
+interface IActorOptionsInterface extends _ActorOptions, _RigidBodyOptions { }
 
 export {
     IActorOptionsInterface,
     IEntity,
     IObserver,
     _LocalObserver,
-    
+
     //Layouts
     IInterfacor,
     _GridLayoutOptions,
