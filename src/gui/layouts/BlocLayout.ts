@@ -7,7 +7,6 @@ import {
 } from "@types"
 import { Vector2 } from "three"
 import GuiLayout from "./GuiLayout"
-const randomColor = () => Math.floor(Math.random() * 16777215).toString(16)
 
 // TODO: Ne pas pouvoir resize plus loin qu'un autre élément déjà existant (exemple: le bandeau de gauche doit limiter sont redimmensionnement au début du bandeau de droite)
 // TODO: Pouvoir déplacer les blocs
@@ -68,7 +67,7 @@ class BlocLayout implements IInterfacor {
 			}
 		}
 
-		// Globaliser les variables d'accessibilité
+		// TODO: Globaliser les variables d'accessibilité + Fichier de préférence utilisateur + Enregistrement
 		if (this.options.resizerSize) {
 			document.documentElement.style.setProperty("--a13y-resizer-size", this.options.resizerSize + "px")
 		}
@@ -345,7 +344,6 @@ class BlocLayout implements IInterfacor {
 				if (this.node) {
 					this.node.classList.add("resizing-right")
 					this.node.classList.toggle("moving", true)
-
 				}
 
 				const mouseMoveHandler = (e: MouseEvent) => {
@@ -533,7 +531,6 @@ class BlocLayout implements IInterfacor {
 					if (nearBloc) {
 						yFrom = nearBloc.position.from.y
 					}
-
 
 					if (yFrom < snapStrength) {
 						yFrom = 0

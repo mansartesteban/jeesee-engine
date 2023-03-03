@@ -92,11 +92,7 @@ if (importInput) {
     let fr = new FileReader()
     fr.onload = () => {
       if (fr.result) {
-        layout.clear()
-        let newLayout = JSON.parse(fr.result.toString())
-        newLayout.forEach((bloc: _BlocLayoutPosition) => {
-          layout.addBloc(transformBlocData(bloc))
-        })
+        layout.importLayout(JSON.parse(fr.result.toString()))
       }
     }
     fr.readAsText(file)
@@ -105,15 +101,6 @@ if (importInput) {
 
 
 
-function transformBlocData(datas: _BlocLayoutPosition): _BlocLayoutOptions {
-  let transformed = {
-    x: datas.from.x,
-    y: datas.from.y,
-    width: datas.size.x,
-    height: datas.size.y
-  }
-  return transformed
-}
 
 // const game = new Game()
 
