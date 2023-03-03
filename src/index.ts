@@ -12,12 +12,12 @@ let layout = new GuiLayout()
 
 // TopBar
 layout.addBloc({
-    x: 0, 
-    y: 0, 
-    width: 100,
-    height: 4,
-    zIndex: 100,
-    class: "TopBar"
+  x: 0,
+  y: 0,
+  width: 100,
+  height: 4,
+  zIndex: 100,
+  class: "TopBar"
 })
 
 // Left bar
@@ -59,9 +59,9 @@ layout.addBloc({
 
 // Other
 layout.addBloc({
-  x: 30,
+  x: 20,
   y: 30,
-  width: 20,
+  width: 30,
   height: 20,
   class: "Bloc",
 });
@@ -74,5 +74,5 @@ layout.addBloc({
 //     }
 // }
 
-// game.start() 
+// game.start()
 // TODO: Par l'avenir il faudra changer en engine.start(), ce n'est plus le jeu que je veux démarrer mais le moteur de jeu
