@@ -1,4 +1,4 @@
-import { _BlocLayoutOptions, _GridLayoutOptions } from "@types"
+import { _BlocLayoutOptions, _BlocLayoutPosition, _GridLayoutOptions } from "@types"
 import MathUtils from "@utils/MathUtils"
 import { Vector2 } from "three"
 import BlocLayout from "./BlocLayout"
@@ -6,31 +6,34 @@ import BlocLayout from "./BlocLayout"
 class GuiLayout {
 
     blocs: BlocLayout[] = []
-    gridOptions: _GridLayoutOptions = {
-        rows: 10,
-        columns: 10
-    }
     node: HTMLElement | null
 
     constructor() {
-        // this.gridOptions = {...this.gridOptions, ...gridOptions}
         this.node = document.getElementById("jeesee-engine")
-        
-        this.createLayout()
     }
 
-    createLayout() {
-        if (this.node) {
-            // this.node.style.width = this.op
-            // this.node.style.gridTemplateColumns = `repeat(${this.gridOptions.columns}, 1fr)`
-            // this.node.style.gridTemplateRows = `repeat(${this.gridOptions.rows}, 1fr)`
-        }
+    importLayout(blocs: _BlocLayoutPosition) {
+
+    }
+    exportLayout(): _BlocLayoutPosition[] {
+        return this.blocs.map(bloc => bloc.position)
     }
 
     //TODO: actionBar: boolean (reduce, close)
-    //TODO: resizable
+
+    clear() {
+        this.blocs.forEach(bloc => {
+            if (bloc.node) {
+                this.node?.removeChild(bloc.node)
+            }
+        })
+        this.blocs.splice(0, this.blocs.length)
+    }
+
     addBloc(options: _BlocLayoutOptions) {
-        
+
+        console.log("options to add", options)
+
         if (this.node) {
             let bloc = new BlocLayout(options, this)
             this.blocs.push(bloc)
@@ -40,7 +43,7 @@ class GuiLayout {
         }
     }
 
-    static getScreenPosition(x: number, y: number) :Vector2 {
+    static getScreenPosition(x: number, y: number): Vector2 {
         let coordinate = new Vector2(
             MathUtils.mapRange(x, 0, window.innerWidth, 0, 100),
             MathUtils.mapRange(y, 0, window.innerHeight, 0, 100)

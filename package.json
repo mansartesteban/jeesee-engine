@@ -3,7 +3,8 @@
     "start": "concurrently \"npm run ts\" \"npm run serve\" ",
     "serve": "npx webpack serve --live-reload",
     "ts": "npx tsc",
-    "build": ".\\node_modules\\.bin\\webpack"
+    "build": ".\\node_modules\\.bin\\webpack",
+    "lines": "dir -Recurse \"src/*.ts\" | Get-Content | Measure-Object -Line"
   },
   "devDependencies": {
     "@types/three": "^0.149.0",

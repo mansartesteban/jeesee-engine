@@ -2,6 +2,7 @@ import Observer from "@/Observer"
 import {
 	IInterfacor,
 	_BlocLayoutOptions,
+	_BlocLayoutPosition,
 	_GridLayoutOptions,
 } from "@types"
 import { Vector2 } from "three"
@@ -31,22 +32,18 @@ class BlocLayout implements IInterfacor {
 		resizableX: true,
 		resizableY: true,
 		actionBar: true,
-		snapStrength: 2,
+		snapStrength: 1.5,
 		resizerSize: 12
 	}
 
 	node: HTMLElement | null = null
 	layout: GuiLayout
 
-	position: {
-		from: Vector2
-		to: Vector2
-		size: Vector2
-	} = {
-			from: new Vector2(),
-			to: new Vector2(),
-			size: new Vector2(),
-		}
+	position: _BlocLayoutPosition = {
+		from: new Vector2(),
+		to: new Vector2(),
+		size: new Vector2(),
+	}
 
 	observer: Observer = new Observer(BlocLayout.EVENTS)
 
@@ -73,7 +70,7 @@ class BlocLayout implements IInterfacor {
 
 		// Globaliser les variables d'accessibilité
 		if (this.options.resizerSize) {
-			let root = document.documentElement.style.setProperty("--a13y-resizer-size", this.options.resizerSize + "px")
+			document.documentElement.style.setProperty("--a13y-resizer-size", this.options.resizerSize + "px")
 		}
 
 		this.layout = layout
@@ -83,14 +80,11 @@ class BlocLayout implements IInterfacor {
 
 	createElement(): void {
 		this.node = document.createElement("div")
-		this.node.classList.add("layout-bloc", "resizable", this.options.class || "")
+		this.node.classList.add("layout-bloc", "resizable")
 
 		if (this.options.zIndex) {
 			this.node.style.zIndex = this.options.zIndex.toString()
 		}
-
-		// //TODO: Only for debug
-		// this.node.style.background = "#" + randomColor()
 
 		this.observer.$on(
 			[
@@ -100,7 +94,6 @@ class BlocLayout implements IInterfacor {
 			this.reposition.bind(this)
 		)
 
-
 		this.createResizers()
 		this.makeMovable()
 
@@ -109,9 +102,16 @@ class BlocLayout implements IInterfacor {
 
 	makeMovable() {
 		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0
+
 			this.node.addEventListener("mousedown", (e) => {
 				e.preventDefault()
 				e.stopPropagation()
+
+				if (this.node) {
+					this.node.classList.toggle("moving", true)
+				}
 
 				let originalClick = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 				let deltaClick = new Vector2(
@@ -128,118 +128,151 @@ class BlocLayout implements IInterfacor {
 					let xFrom = mousePosition.x - deltaClick.x
 					let yFrom = mousePosition.y - deltaClick.y
 
+					let isLeftSnapped = false
+					let isRightSnapped = false
+					let isTopSnapped = false
+					let isBottomSnapped = false
+
 					let nearBloc
 
-					// current bloc right side on other blocs left sides
+					// Current bloc right side on other blocs left sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(xTo - bl.position.from.x) < (this.options.snapStrength || 0)
+						Math.abs(xTo - bl.position.from.x) < snapStrength
+						&&
+						bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
 					)
 					if (nearBloc) {
 						xTo = nearBloc.position.from.x
 						xFrom = xTo - this.position.size.x
+						isRightSnapped = true
 					}
 
-					// current bloc bottom side on other blocs top sides
+					// Current bloc bottom side on other blocs top sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(yTo - bl.position.from.y) < (this.options.snapStrength || 0)
+						Math.abs(yTo - bl.position.from.y) < snapStrength
+						&&
+						bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
 					)
 					if (nearBloc) {
 						yTo = nearBloc.position.from.y
 						yFrom = yTo - this.position.size.y
+						isBottomSnapped = true
 					}
 
-					// current bloc left side on other blocs right sides
+					// Current bloc left side on other blocs right sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(xFrom - bl.position.to.x) < (this.options.snapStrength || 0)
+						Math.abs(xFrom - bl.position.to.x) < snapStrength
+						&&
+						bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
 					)
 					if (nearBloc) {
 						xFrom = nearBloc.position.to.x
 						xTo = xFrom + this.position.size.x
+						isLeftSnapped = true
 					}
 
-					// current bloc top side on other blocs bottom sides
+					// Current bloc top side on other blocs bottom sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(yFrom - bl.position.to.y) < (this.options.snapStrength || 0)
+						Math.abs(yFrom - bl.position.to.y) < snapStrength
+						&&
+						bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
 					)
 					if (nearBloc) {
 						yFrom = nearBloc.position.to.y
 						yTo = yFrom + this.position.size.y
+						isTopSnapped = true
 					}
 
-					// current bloc right side on other blocs right sides
+					// Current bloc right side on other blocs right sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(xTo - bl.position.to.x) < (this.options.snapStrength || 0)
+						Math.abs(xTo - bl.position.to.x) < snapStrength
+						&&
+						bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
 					)
 					if (nearBloc) {
 						xTo = nearBloc.position.to.x
 						xFrom = xTo - this.position.size.x
+						isRightSnapped = true
 					}
 
-					// current bloc bottom side on other blocs bottom sides
+					// Current bloc bottom side on other blocs bottom sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(yTo - bl.position.to.y) < (this.options.snapStrength || 0)
+						Math.abs(yTo - bl.position.to.y) < snapStrength
+						&&
+						bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
 					)
 					if (nearBloc) {
 						yTo = nearBloc.position.to.y
 						yFrom = yTo - this.position.size.y
+						isBottomSnapped = true
 					}
 
-					// current bloc left side on other blocs left sides
+					// Current bloc left side on other blocs left sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(xFrom - bl.position.from.x) < (this.options.snapStrength || 0)
+						Math.abs(xFrom - bl.position.from.x) < snapStrength
+						&&
+						bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
 					)
 					if (nearBloc) {
 						xFrom = nearBloc.position.from.x
 						xTo = xFrom + this.position.size.x
+						isLeftSnapped = true
 					}
 
-					// current bloc top side on other blocs top sides
+					// Current bloc top side on other blocs top sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(yFrom - bl.position.from.y) < (this.options.snapStrength || 0)
+						Math.abs(yFrom - bl.position.from.y) < snapStrength
+						&&
+						bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
 					)
 					if (nearBloc) {
 						yFrom = nearBloc.position.from.y
 						yTo = yFrom + this.position.size.y
+						isTopSnapped = true
 					}
 
 					// Make bloc not movable outside of container by the left
-					if (xFrom < (this.options.snapStrength || 0)) {
+					if (xFrom < snapStrength) {
 						xFrom = 0
 						xTo = this.position.size.x
+						isLeftSnapped = true
 					}
 
 					// Make bloc not movable outside of container by the right
-					if (xTo > 100 - (this.options.snapStrength || 0)) {
+					if (xTo > 100 - snapStrength) {
 						xFrom = 100 - this.position.size.x
 						xTo = 100
+						isRightSnapped = true
 					}
 
 					// Make bloc not movable outside of container by the top
-					if (yFrom < (this.options.snapStrength || 0)) {
+					if (yFrom < snapStrength) {
 						yFrom = 0
 						yTo = this.position.size.y
+						isTopSnapped = true
 					}
 
 					// Make bloc not movable outside of container by the bottom
-					if (yTo > 100 - (this.options.snapStrength || 0)) {
+					if (yTo > 100 - snapStrength) {
 						yFrom = 100 - this.position.size.y
 						yTo = 100
+						isBottomSnapped = true
 					}
 
 					this.position.to.x = xTo
@@ -247,9 +280,24 @@ class BlocLayout implements IInterfacor {
 					this.position.from.x = xFrom
 					this.position.from.y = yFrom
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE)
+
+					if (this.node) {
+						this.node.classList.toggle("resizing-right", isRightSnapped)
+						this.node.classList.toggle("resizing-left", isLeftSnapped)
+						this.node.classList.toggle("resizing-top", isTopSnapped)
+						this.node.classList.toggle("resizing-bottom", isBottomSnapped)
+					}
+
 				}
 
 				const mouseUpHandler = () => {
+					if (this.node) {
+						this.node.classList.toggle("resizing-right", false)
+						this.node.classList.toggle("resizing-left", false)
+						this.node.classList.toggle("resizing-top", false)
+						this.node.classList.toggle("resizing-bottom", false)
+						this.node.classList.toggle("moving", false)
+					}
 					document.removeEventListener("mousemove", mouseMoveHandler)
 					document.removeEventListener("mouseup", mouseUpHandler)
 				}
@@ -282,6 +330,9 @@ class BlocLayout implements IInterfacor {
 
 	createRightResizer() {
 		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0
+
 			let resizerRight = document.createElement("div")
 			resizerRight.classList.add("resizer", "resizer-right")
 			this.node.appendChild(resizerRight)
@@ -291,42 +342,59 @@ class BlocLayout implements IInterfacor {
 				e.stopPropagation()
 				document.body.classList.add("resize-x")
 
+				if (this.node) {
+					this.node.classList.add("resizing-right")
+					this.node.classList.toggle("moving", true)
+
+				}
+
 				const mouseMoveHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
 					let xPos = mousePosition.x
+					// Current bloc right side on other blocs left sides
 					let nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.x - bl.position.from.x) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.x - bl.position.from.x) < snapStrength
+						&&
+						bl.position.to.y > (this.position.from.y - snapStrength) && bl.position.from.y < (this.position.to.y + snapStrength)
 					)
 					if (nearBloc) {
 						xPos = nearBloc.position.from.x
 					}
 
+					// Current bloc right side on other blocs right sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.x - bl.position.to.x) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.x - bl.position.to.x) < snapStrength
+						&&
+						bl.position.to.y > (this.position.from.y - snapStrength) && bl.position.from.y < (this.position.to.y + snapStrength)
 					)
 					if (nearBloc) {
 						xPos = nearBloc.position.to.x
 					}
 
-					if (xPos > 100 - (this.options.snapStrength || 0)) {
+					if (xPos > 100 - snapStrength) {
 						xPos = 100
 					}
 
-					this.position.to.x = xPos
+					this.position.to.x = xPos >= this.position.from.x + snapStrength ? xPos : this.position.from.x
 					this.position.size.x = this.position.to.x - this.position.from.x
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
-					document.body.classList.remove("resize-x")
+					document.body.classList.toggle("resize-x", false)
+					if (this.node) {
+						this.node.classList.toggle("resizing-right", false)
+						this.node.classList.toggle("moving", false)
+
+					}
 					document.removeEventListener("mousemove", mouseMoveHandler)
 					document.removeEventListener("mouseup", mouseUpHandler)
 				}
@@ -339,6 +407,9 @@ class BlocLayout implements IInterfacor {
 
 	createLeftResizer() {
 		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0
+
 			let resizerLeft = document.createElement("div")
 			resizerLeft.classList.add("resizer", "resizer-left")
 			this.node.appendChild(resizerLeft)
@@ -348,36 +419,48 @@ class BlocLayout implements IInterfacor {
 				e.stopPropagation()
 				document.body.classList.add("resize-x")
 
+				if (this.node) {
+					this.node.classList.add("resizing-left")
+					this.node.classList.toggle("moving", true)
+				}
+
 				const mouseMoveHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
 					let xFrom = mousePosition.x
+
+					// Current bloc left side on other blocs right sides
 					let nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.x - bl.position.to.x) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.x - bl.position.to.x) < snapStrength
+						&&
+						bl.position.to.y > (this.position.from.y - snapStrength) && bl.position.from.y < (this.position.to.y + snapStrength)
 					)
 					if (nearBloc) {
 						xFrom = nearBloc.position.to.x
 					}
 
+					// Current bloc left side on other blocs left sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.x - bl.position.from.x) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.x - bl.position.from.x) < snapStrength
+						&&
+						bl.position.to.y > (this.position.from.y - snapStrength) && bl.position.from.y < (this.position.to.y + snapStrength)
 					)
 					if (nearBloc) {
 						xFrom = nearBloc.position.from.x
 					}
 
 
-					if (xFrom < (this.options.snapStrength || 0)) {
+					if (xFrom < snapStrength) {
 						xFrom = 0
 					}
 
-					this.position.from.x = xFrom
+					this.position.from.x = xFrom <= this.position.to.x - snapStrength ? xFrom : this.position.to.x
 					this.position.size.x = this.position.to.x - this.position.from.x
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 
@@ -386,7 +469,11 @@ class BlocLayout implements IInterfacor {
 				const mouseUpHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
-					document.body.classList.remove("resize-x")
+					document.body.classList.toggle("resize-x", false)
+					if (this.node) {
+						this.node.classList.toggle("resizing-left", false)
+						this.node.classList.toggle("moving", false)
+					}
 					document.removeEventListener("mousemove", mouseMoveHandler)
 					document.removeEventListener("mouseup", mouseUpHandler)
 				}
@@ -399,6 +486,9 @@ class BlocLayout implements IInterfacor {
 
 	createTopResizer() {
 		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0
+
 			let resizerTop = document.createElement("div")
 			resizerTop.classList.add("resizer", "resizer-top")
 			this.node.appendChild(resizerTop)
@@ -408,43 +498,59 @@ class BlocLayout implements IInterfacor {
 				e.stopPropagation()
 				document.body.classList.add("resize-y")
 
+				if (this.node) {
+					this.node.classList.add("resizing-top")
+					this.node.classList.toggle("moving", true)
+				}
+
 				const mouseMoveHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
 					let yFrom = mousePosition.y
+
+					// Current bloc top side on other blocs bottom sides
 					let nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.y - bl.position.to.y) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.y - bl.position.to.y) < snapStrength
+						&&
+						bl.position.to.x > (this.position.from.x - snapStrength) && bl.position.from.x < (this.position.to.x + snapStrength)
 					)
 					if (nearBloc) {
 						yFrom = nearBloc.position.to.y
 					}
 
+					// Current bloc top side on other blocs top sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.y - bl.position.from.y) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.y - bl.position.from.y) < snapStrength
+						&&
+						bl.position.to.x > (this.position.from.x - snapStrength) && bl.position.from.x < (this.position.to.x + snapStrength)
 					)
 					if (nearBloc) {
 						yFrom = nearBloc.position.from.y
 					}
 
 
-					if (yFrom < (this.options.snapStrength || 0)) {
+					if (yFrom < snapStrength) {
 						yFrom = 0
 					}
 
-					this.position.from.y = yFrom
+					this.position.from.y = yFrom <= this.position.to.y - snapStrength ? yFrom : this.position.to.y
 					this.position.size.y = this.position.to.y - this.position.from.y
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
-					document.body.classList.remove("resize-y")
+					document.body.classList.toggle("resize-y", false)
+					if (this.node) {
+						this.node.classList.toggle("resizing-top", false)
+						this.node.classList.toggle("moving", false)
+					}
 					document.removeEventListener("mousemove", mouseMoveHandler)
 					document.removeEventListener("mouseup", mouseUpHandler)
 				}
@@ -457,6 +563,9 @@ class BlocLayout implements IInterfacor {
 
 	createBottomResizer() {
 		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0
+
 			let resizerBottom = document.createElement("div")
 			resizerBottom.classList.add("resizer", "resizer-bottom")
 			this.node.appendChild(resizerBottom)
@@ -466,43 +575,61 @@ class BlocLayout implements IInterfacor {
 				e.stopPropagation()
 				document.body.classList.add("resize-y")
 
+				if (this.node) {
+					this.node.classList.add("resizing-bottom")
+					this.node.classList.toggle("moving", true)
+				}
+
 				const mouseMoveHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
 					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
 
 					let yTo = mousePosition.y
+
+					// Current bloc bottom side on other blocs top sides
 					let nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.y - bl.position.to.y) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.y - bl.position.to.y) < snapStrength
+						&&
+						bl.position.to.x > (this.position.from.x - snapStrength) && bl.position.from.x < (this.position.to.x + snapStrength)
 					)
 					if (nearBloc) {
 						yTo = nearBloc.position.to.y
 					}
 
+					// Current bloc bottom side on other blocs bottom sides
 					nearBloc = this.layout.blocs.find(bl =>
 						bl !== this
 						&&
-						Math.abs(mousePosition.y - bl.position.from.y) < (this.options.snapStrength || 0)
+						Math.abs(mousePosition.y - bl.position.from.y) < snapStrength
+						&&
+						bl.position.to.x > (this.position.from.x - snapStrength) && bl.position.from.x < (this.position.to.x + snapStrength)
 					)
 					if (nearBloc) {
 						yTo = nearBloc.position.from.y
 					}
 
 
-					if (yTo < (this.options.snapStrength || 0)) {
+					if (yTo < snapStrength) {
 						yTo = 0
 					}
 
-					this.position.to.y = yTo
+					this.position.to.y = yTo >= this.position.from.y + snapStrength ? yTo : this.position.from.y
+
 					this.position.size.y = this.position.to.y - this.position.from.y
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 				}
 				const mouseUpHandler = (e: MouseEvent) => {
 					e.preventDefault()
 					e.stopPropagation()
-					document.body.classList.remove("resize-y")
+					document.body.classList.toggle("resize-y", false)
+					if (this.node) {
+						this.node.classList.toggle("resizing-bottom", false)
+						this.node.classList.toggle("moving", false)
+
+					}
 					document.removeEventListener("mousemove", mouseMoveHandler)
 					document.removeEventListener("mouseup", mouseUpHandler)
 				}

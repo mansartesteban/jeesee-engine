@@ -1,5 +1,5 @@
 import Game from "@/Game";
-import { BufferGeometry, Material, Object3D, Vector3 } from "three";
+import { BufferGeometry, Material, Object3D, Vector2, Vector3 } from "three";
 
 declare global {
     var __jeesee__: {
@@ -69,6 +69,12 @@ type _BlocLayoutOptions = {
     resizerSize?: number
 }
 
+type _BlocLayoutPosition = {
+    from: Vector2,
+    to: Vector2,
+    size: Vector2
+}
+
 interface IInterfacor {
     node: Node | null
     createElement(): void
@@ -85,5 +91,6 @@ export {
     //Layouts
     IInterfacor,
     _GridLayoutOptions,
-    _BlocLayoutOptions
+    _BlocLayoutOptions,
+    _BlocLayoutPosition
 }
