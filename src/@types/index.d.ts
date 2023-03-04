@@ -1,3 +1,4 @@
+import MiniVector2 from "@/core/geometry/MiniVector2";
 import Game from "@/Game";
 import { BufferGeometry, Material, Object3D, Vector2, Vector3 } from "three";
 
@@ -70,9 +71,9 @@ type _BlocLayoutOptions = {
 }
 
 type _BlocLayoutPosition = {
-    from: Vector2,
-    to: Vector2,
-    size: Vector2
+    from: MiniVector2,
+    to: MiniVector2,
+    size: MiniVector2
 }
 
 interface IInterfacor {
