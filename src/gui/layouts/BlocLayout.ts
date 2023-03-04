@@ -10,10 +10,15 @@ import ActionBar from "./ActionBar";
 import GuiLayout from "./GuiLayout";
 import Interfacor from "./Interfacor";
 
+
 class BlocLayout extends Interfacor {
 	static EVENTS = Object.freeze({
 		BLOC_RESIZE: "BLOC_RESIZE",
 		BLOC_MOVE: "BLOC_MOVE",
+		BLOC_CLOSE: "BLOC_CLOSE",
+		BLOC_OPEN: "BLOC_OPEN",
+		BLOC_MINIMIZE: "BLOC_MINIMIZE",
+		BLOC_UNMINIMIZE: "BLOC_UNMINIMIZE",
 	});
 
 	options: _BlocLayoutOptions = {
@@ -32,6 +37,11 @@ class BlocLayout extends Interfacor {
 		to: new Vector2(),
 		size: new Vector2(),
 	};
+
+	savedPosition = this.position;
+
+	isClosed: boolean = false;
+	isMinimized: boolean = false;
 
 	observer: Observer = new Observer(BlocLayout.EVENTS);
 
@@ -101,11 +111,216 @@ class BlocLayout extends Interfacor {
 		this.addNode(actionBar);
 
 		actionBar.addAction({
-			icon: "add-r",
+			icon: "chevron-down",
 			callback: () => {
-				alert("toto");
+				this.isMinimized ? this.unminimize() : this.minimize();
 			}
 		});
+
+		actionBar.addAction({
+			icon: "close",
+			callback: () => {
+				this.isClosed ? this.open() : this.close();
+			}
+		});
+
+	}
+
+	minimize() {
+		this.isMinimized = true;
+
+		this.savedPosition = JSON.parse(JSON.stringify(this.position));
+
+		this.position.from.x = 2;
+		this.position.size.x = 10;
+		this.position.to.x = this.position.from.x + this.position.size.x;
+
+		this.position.from.y = 96;
+		this.position.size.y = 4;
+		this.position.to.x = this.position.from.y + this.position.size.y;
+
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_MINIMIZE);
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
+	}
+
+	unminimize() {
+		this.isMinimized = false;
+		this.position = this.savedPosition;
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_UNMINIMIZE);
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
+	}
+
+	close() {
+		this.isClosed = true;
+
+		if (this.layout && this.layout.node && this.node) {
+			this.layout.node.removeChild(this.node);
+		}
+
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_CLOSE);
+	}
+	open() {
+		this.isClosed = false;
+		this.observer.$emit(BlocLayout.EVENTS.BLOC_OPEN);
+	}
+
+
+
+	reposition() {
+		if (this.node) {
+			this.node.style.left = `${this.position.from.x}vw`;
+			this.node.style.right = `${100 - this.position.to.x}vw`;
+			this.node.style.top = `${this.position.from.y}vh`;
+			this.node.style.bottom = `${100 - this.position.to.y}vh`;
+		}
+	}
+
+	makeResizable() {
+		if (this.options.resizableX) {
+			this.createResizer("left");
+			this.createResizer("right");
+		}
+		if (this.options.resizableY) {
+			this.createResizer("top");
+			this.createResizer("bottom");
+		}
+	}
+
+	createResizer(side: string) {
+
+		let origins: Record<string, { from: string, opposite: string, mainAxe: string, crossAxe: string; }> = {
+			"right": {
+				from: "to",
+				opposite: "from",
+				mainAxe: "x",
+				crossAxe: "y"
+			},
+			"left": {
+				from: "from",
+				opposite: "to",
+				mainAxe: "x",
+				crossAxe: "y"
+			},
+			"bottom": {
+				from: "to",
+				opposite: "from",
+				mainAxe: "y",
+				crossAxe: "x"
+			},
+			"top": {
+				from: "from",
+				opposite: "to",
+				mainAxe: "y",
+				crossAxe: "x"
+			},
+		};
+
+		// Les variables à utiliser
+		let mainAxe = origins[side].mainAxe as keyof MiniVector2;
+		let crossAxe = origins[side].crossAxe as keyof MiniVector2;
+		let from = origins[side].from as keyof _BlocLayoutPosition;
+		let oppositeFrom = origins[side].opposite as keyof _BlocLayoutPosition;
+
+		// If node exists to the DOM
+		if (this.node) {
+
+			let snapStrength = this.options.snapStrength || 0;
+
+			// Create and element to DOM
+			let resizer = document.createElement("div");
+			resizer.classList.toggle("resizer", true);
+			resizer.classList.toggle("resizer-" + side, true);
+			this.node.appendChild(resizer);
+
+			// Handle the resizing when click is down
+			resizer.addEventListener("mousedown", (e: MouseEvent) => {
+				e.preventDefault();
+				e.stopPropagation();
+				document.body.classList.toggle("resize-" + mainAxe, true);
+
+				// If node exists to the DOM
+				if (this.node) {
+
+					// Add classes to apply specific style
+					this.node.classList.toggle("resizing-" + side, true);
+					this.node.classList.toggle("moving", true);
+
+					// Handle the resizing constraints while moving the mouse (snap to other blocs, border limits ...)
+					const mouseMoveHandler = (e: MouseEvent) => {
+						e.preventDefault();
+						e.stopPropagation();
+
+						// Get mouse position transform from 0 to 100
+						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY);
+
+						// Get mopuse position on current main axe
+						let pos = mousePosition[mainAxe];
+
+						// Check collisions/snappings with other blocs
+						if (this.layout) {
+							for (let i = 0; i < this.layout.blocs.length; i++) {
+
+								let bloc = this.layout.blocs[i];
+
+								// Doesn't apply calculation on current bloc
+								if (bloc !== this) {
+
+									// Check if the bloc is close enough to apply calculation (with snapStrength)
+									if (
+										bloc.position.from[crossAxe] < (this.position.to[crossAxe] + snapStrength)
+										&&
+										bloc.position.to[crossAxe] > (this.position.from[crossAxe] - snapStrength)
+									) {
+
+										// Check is current edge is close enough to snap on first edge of other bloc within the main axe
+										if (Math.abs(mousePosition[mainAxe] - bloc.position[from][mainAxe]) < snapStrength) {
+											pos = bloc.position[from][mainAxe];
+											break;
+										}
+
+										// Check is current edge is close enough to snap on second edge of other bloc within the main axe
+										if (Math.abs(mousePosition[mainAxe] - bloc.position[oppositeFrom][mainAxe]) < snapStrength) {
+											pos = bloc.position[oppositeFrom][mainAxe];
+											break;
+										}
+
+									}
+
+								}
+							}
+						}
+
+
+						// Calculate if current edge is passing through layout border and reposition it to the limits with snapStrength
+						pos = pos > 100 - snapStrength ? 100 : (pos < snapStrength ? 0 : pos);
+
+						// Finally apply calculted new position of the edge et recalculate size of the bloc
+						console.log(this.position[oppositeFrom][mainAxe], pos, Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength, Math.abs(this.position[oppositeFrom][mainAxe] - pos));
+						this.position[from][mainAxe] = Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength ? pos : this.position[oppositeFrom][mainAxe];
+						this.position.size[mainAxe] = Math.abs(this.position[from][mainAxe] - this.position[oppositeFrom][mainAxe]);
+
+						// Emit an event on observer to annouce the bloc has resized
+						this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE);
+					};
+
+					// Reinitialize classes and events to original after the mouse click is up
+					const mouseUpHandler = (e: MouseEvent) => {
+						e.preventDefault();
+						e.stopPropagation();
+						document.body.classList.toggle("resize-" + mainAxe, false);
+						if (this.node) {
+							this.node.classList.toggle("resizing-" + side, false);
+							this.node.classList.toggle("moving", false);
+						}
+						document.removeEventListener("mousemove", mouseMoveHandler);
+						document.removeEventListener("mouseup", mouseUpHandler);
+					};
+					document.addEventListener("mousemove", mouseMoveHandler);
+					document.addEventListener("mouseup", mouseUpHandler);
+				}
+
+			});
+		}
 	}
 
 	makeMovable() {
@@ -315,163 +530,6 @@ class BlocLayout extends Interfacor {
 
 				document.addEventListener("mousemove", mouseMoveHandler);
 				document.addEventListener("mouseup", mouseUpHandler);
-			});
-		}
-	}
-
-	reposition() {
-		console.log("repositionning", this.node, this.position);
-		if (this.node) {
-			this.node.style.left = `${this.position.from.x}vw`;
-			this.node.style.right = `${100 - this.position.to.x}vw`;
-			this.node.style.top = `${this.position.from.y}vh`;
-			this.node.style.bottom = `${100 - this.position.to.y}vh`;
-		}
-	}
-
-	makeResizable() {
-		if (this.options.resizableX) {
-			this.createResizer("right");
-			this.createResizer("left");
-		}
-		if (this.options.resizableY) {
-			this.createResizer("bottom");
-			this.createResizer("top");
-		}
-	}
-
-	createResizer(side: string) {
-
-		let origins: Record<string, { from: string, opposite: string, mainAxe: string, crossAxe: string; }> = {
-			"right": {
-				from: "to",
-				opposite: "from",
-				mainAxe: "x",
-				crossAxe: "y"
-			},
-			"left": {
-				from: "from",
-				opposite: "to",
-				mainAxe: "x",
-				crossAxe: "y"
-			},
-			"bottom": {
-				from: "to",
-				opposite: "from",
-				mainAxe: "y",
-				crossAxe: "x"
-			},
-			"top": {
-				from: "from",
-				opposite: "to",
-				mainAxe: "y",
-				crossAxe: "x"
-			},
-		};
-
-		// Les variables à utiliser
-		let mainAxe = origins[side].mainAxe as keyof MiniVector2;
-		let crossAxe = origins[side].crossAxe as keyof MiniVector2;
-		let from = origins[side].from as keyof _BlocLayoutPosition;
-		let oppositeFrom = origins[side].opposite as keyof _BlocLayoutPosition;
-
-		// If node exists to the DOM
-		if (this.node) {
-
-			let snapStrength = this.options.snapStrength || 0;
-
-			// Create and element to DOM
-			let resizer = document.createElement("div");
-			resizer.classList.toggle("resizer", true);
-			resizer.classList.toggle("resizer-" + side, true);
-			this.node.appendChild(resizer);
-
-			// Handle the resizing when click is down
-			resizer.addEventListener("mousedown", (e: MouseEvent) => {
-				e.preventDefault();
-				e.stopPropagation();
-				document.body.classList.toggle("resize-" + mainAxe, true);
-
-				// If node exists to the DOM
-				if (this.node) {
-
-					// Add classes to apply specific style
-					this.node.classList.toggle("resizing-" + side, true);
-					this.node.classList.toggle("moving", true);
-
-					// Handle the resizing constraints while moving the mouse (snap to other blocs, border limits ...)
-					const mouseMoveHandler = (e: MouseEvent) => {
-						e.preventDefault();
-						e.stopPropagation();
-
-						// Get mouse position transform from 0 to 100
-						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY);
-
-						// Get mopuse position on current main axe
-						let pos = mousePosition[mainAxe];
-
-						// Check collisions/snappings with other blocs
-						if (this.layout) {
-							for (let i = 0; i < this.layout.blocs.length; i++) {
-
-								let bloc = this.layout.blocs[i];
-
-								// Doesn't apply calculation on current bloc
-								if (bloc !== this) {
-
-									// Check if the bloc is close enough to apply calculation (with snapStrength)
-									if (
-										bloc.position.from[crossAxe] < (this.position.to[crossAxe] + snapStrength)
-										&&
-										bloc.position.to[crossAxe] > (this.position.from[crossAxe] - snapStrength)
-									) {
-
-										// Check is current edge is close enough to snap on first edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.position[from][mainAxe]) < snapStrength) {
-											pos = bloc.position[from][mainAxe];
-											break;
-										}
-
-										// Check is current edge is close enough to snap on second edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.position[oppositeFrom][mainAxe]) < snapStrength) {
-											pos = bloc.position[oppositeFrom][mainAxe];
-											break;
-										}
-
-									}
-
-								}
-							}
-						}
-
-
-						// Calculate if current edge is passing through layout border and reposition it to the limits with snapStrength
-						pos = pos > 100 - snapStrength ? 100 : (pos < snapStrength ? 0 : pos);
-
-						// Finally apply calculted new position of the edge et recalculate size of the bloc
-						this.position[from][mainAxe] = Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength ? pos : this.position[oppositeFrom][mainAxe];
-						this.position.size[mainAxe] = Math.abs(this.position[from][mainAxe] - this.position[oppositeFrom][mainAxe]);
-
-						// Emit an event on observer to annouce the bloc has resized
-						this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE);
-					};
-
-					// Reinitialize classes and events to original after the mouse click is up
-					const mouseUpHandler = (e: MouseEvent) => {
-						e.preventDefault();
-						e.stopPropagation();
-						document.body.classList.toggle("resize-" + mainAxe, false);
-						if (this.node) {
-							this.node.classList.toggle("resizing-" + side, false);
-							this.node.classList.toggle("moving", false);
-						}
-						document.removeEventListener("mousemove", mouseMoveHandler);
-						document.removeEventListener("mouseup", mouseUpHandler);
-					};
-					document.addEventListener("mousemove", mouseMoveHandler);
-					document.addEventListener("mouseup", mouseUpHandler);
-				}
-
 			});
 		}
 	}

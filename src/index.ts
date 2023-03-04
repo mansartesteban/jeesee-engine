@@ -12,7 +12,6 @@ import BlocLayout from "./gui/layouts/BlocLayout";
 
 
 let layout = new GuiLayout();
-console.log("index.js : instanciated layout", layout);
 let TopBar = new BlocLayout({
   x: 0,
   y: 0,
@@ -21,7 +20,6 @@ let TopBar = new BlocLayout({
   zIndex: 100,
   class: "TopBar"
 });
-console.log("index.js : instanciated TopBar", TopBar);
 
 let LeftBar = new BlocLayout({
   x: 0,
@@ -75,7 +73,6 @@ layout
   .addBloc(OtherBloc)
   .addBloc(OtherRightBar);
 
-console.log("index.js : added TopBar to layout");
 
 document.getElementById("clear-layout")?.addEventListener("click", () => {
   layout.clear();

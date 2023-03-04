@@ -6,6 +6,9 @@ type _ActionBarOptions = {
     align: string;
 };
 
+var iconStyle = "-r"; // TODO: préférence
+
+
 // TODO: Implements DOMElement ?
 class ActionBar extends Interfacor {
 
@@ -37,15 +40,16 @@ class ActionBar extends Interfacor {
                 if (!action.icon.startsWith("gg-")) {
                     action.icon = "gg-" + action.icon;
                 }
+                if (action.icon.endsWith("-r") || action.icon.endsWith("-o")) {
+                    action.icon = action.icon.substring(0, action.icon.length - 2);
+                }
                 let icon = document.createElement("i");
-                icon.classList.add(action.icon);
+                icon.classList.add(action.icon + iconStyle);
                 actionButton.appendChild(icon);
             }
 
             if (action.callback) {
-                console.log("binding callback");
                 actionButton.addEventListener("click", (e: MouseEvent) => {
-                    console.log("clicked");
                     e.preventDefault();
                     e.stopPropagation();
                     action.callback && action.callback();

@@ -32,8 +32,8 @@
 }
 
 
-$transitionDuration: .5s;
-$transitionTiming: ease-out;
+$transitionDuration: .33s;
+$transitionTiming: cubic-bezier(0, 0, 0, 1);
 
 .actions {
   position: fixed;
@@ -44,6 +44,128 @@ $transitionTiming: ease-out;
   flex-direction: column;
   gap: 20px;
   width: 200px;
+}
+
+@keyframes flicker {
+  from {
+    opacity: 0.75;
+  }
+
+  4% {
+    opacity: 0.75;
+  }
+
+  6% {
+    opacity: 0.7;
+  }
+
+  8% {
+    opacity: 0.8;
+  }
+
+  10% {
+    opacity: 0.7;
+  }
+
+  11% {
+    opacity: 0.75;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  14% {
+    opacity: 0.8;
+  }
+
+  16% {
+    opacity: 0.95;
+  }
+
+  17% {
+    opacity: 0.95;
+  }
+
+  19% {
+    opacity: 0.75;
+  }
+
+  20% {
+    opacity: 0.75;
+  }
+
+  24% {
+    opacity: 0.75;
+  }
+
+  26% {
+    opacity: 0.94;
+  }
+
+  28% {
+    opacity: 0.75;
+  }
+
+  38% {
+    opacity: 0.7;
+  }
+
+  40% {
+    opacity: 0.75;
+  }
+
+  42% {
+    opacity: 0.85;
+  }
+
+  44% {
+    opacity: 0.75;
+  }
+
+  46% {
+    opacity: 0.75;
+  }
+
+  56% {
+    opacity: 0.75;
+  }
+
+  58% {
+    opacity: 1;
+  }
+
+  60% {
+    opacity: 0.75;
+  }
+
+  68% {
+    opacity: 0.75;
+  }
+
+  70% {
+    opacity: .85;
+  }
+
+  72% {
+    opacity: 0.75;
+  }
+
+  93% {
+    opacity: 0.75;
+  }
+
+  95% {
+    opacity: .85;
+  }
+
+  97% {
+    opacity: 0.75;
+  }
+
+  to {
+    opacity: 0.55;
+  }
 }
 
 button {
@@ -63,11 +185,27 @@ button {
 }
 
 .resize-y {
-  cursor: ns-resize;
+  cursor: ns-resize !important;
+
+  .resizer {
+    pointer-events: none;
+  }
 }
 
 .resize-x {
-  cursor: ew-resize;
+  cursor: ew-resize !important;
+
+  .resizer {
+    pointer-events: none;
+  }
+}
+
+body:not(.resize-x):not(.resize-y) {
+  .resizable:not(.resizing-right):not(.resizing-left):not(.resizing-top):not(.resizing-bottom) {
+    .resizer:hover {
+      background: rgba(255, 255, 255, .1);
+    }
+  }
 }
 
 #jeesee-engine {
@@ -80,7 +218,7 @@ button {
 
   .layout-bloc {
 
-    background: #333544;
+    background: #333744;
     box-sizing: border-box;
     resize: both;
     position: absolute;
@@ -124,6 +262,18 @@ button {
 
         &:hover {
           background: rgba(255, 255, 255, .1);
+
+          i {
+            color: white;
+          }
+
+        }
+
+        i {
+          color: rgba(255, 255, 255, .33);
+          transition: color $transitionDuration $transitionTiming;
+
+
         }
       }
 
@@ -135,32 +285,78 @@ button {
 
     transition: border $transitionDuration $transitionTiming;
 
+
     &.resizing-right {
-      border-right: 1px solid #86BBBD;
+
+      .resizer-right {
+        background: #76c3c6;
+        width: 2px !important;
+        transform: translateX(1px) translateY(-1px) !important;
+        box-shadow: 0 0 5px #86BBBD;
+        animation: flicker 3s linear infinite;
+      }
     }
 
     &.resizing-left {
-      border-left: 1px solid #86BBBD;
+
+      .resizer-left {
+        background: #76c3c6;
+        width: 2px !important;
+        transform: translateX(-1px) translateY(-1px) !important;
+        box-shadow: 0 0 5px #86BBBD;
+        animation: flicker 3s linear infinite;
+      }
+
     }
 
     &.resizing-top {
-      border-top: 1px solid #86BBBD;
+      .resizer-top {
+        background: #76c3c6;
+        height: 2px !important;
+        transform: translateX(-1px) translateY(-1px) !important;
+        box-shadow: 0 0 5px #86BBBD;
+        animation: flicker 3s linear infinite;
+      }
     }
 
     &.resizing-bottom {
-      border-bottom: 1px solid #86BBBD;
-    }
-
-    &:not(.resizing-right):not(.resizing-left):not(.resizing-top):not(.resizing-bottom) {
-      .resizer:hover {
-        background: rgba(255, 255, 255, .1);
+      .resizer-bottom {
+        background: #76c3c6;
+        height: 2px !important;
+        transform: translateX(-1px) translateY(+1px) !important;
+        box-shadow: 0 0 5px #86BBBD;
+        animation: flicker 3s linear infinite;
       }
     }
+
+    // border-right: 1px solid #86BBBD;
+
+    // height: calc(100% + 2px);
+    // width: var(--a13y-resizer-size);
+    // top: 0;
+    // right: 0;
+    // transform: translateX(calc(var(--a13y-resizer-size) / 2)) translateY(-1px);
+
+    // &.resizing-left {
+    //   border-left: 1px solid #86BBBD;
+    // }
+
+    // &.resizing-top {
+    //   border-top: 1px solid #86BBBD;
+    // }
+
+    // &.resizing-bottom {
+    //   border-bottom: 1px solid #86BBBD;
+    // }
 
     .resizer {
 
       position: absolute;
-      transition: background-color $transitionDuration $transitionTiming;
+      transition:
+        background-color $transitionDuration $transitionTiming,
+        width $transitionDuration $transitionTiming,
+        height $transitionDuration $transitionTiming,
+        transform $transitionDuration $transitionTiming ;
 
       &.resizer-right {
         cursor: ew-resize;
