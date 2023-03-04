@@ -10,16 +10,11 @@ import { Vector2 } from "three"
 import GuiLayout from "./GuiLayout"
 
 // TODO: Ne pas pouvoir resize plus loin qu'un autre élément déjà existant (exemple: le bandeau de gauche doit limiter sont redimmensionnement au début du bandeau de droite)
-// TODO: Pouvoir déplacer les blocs
-// TODO: Enregirster la position des blocs
-// TODO: Lorsque l'on redimensionne d'un côté pûis de l'autre, le bloc revient à sa position de départ (rendre les données réactives)
-
-// TODO: Voir s'il ne serait pas mieux de passer tous les élements en position absolute et gérer moi même la grid (tout n'est pas totalement à refaire comme les fonctions de calcul des grilles par exemple)
-// TODO: Du coup je pourrais plus facilement gérer les transitions, utiliser un lerp > .5
-
+// TODO: Trouver un moyen de faire que les déplacement ne se fassent pas endirect au move de la souris pour pouvoir appliquer des transitions et notamment un lerp()
 // TODO: Plutôt que de calculer les positions des blocs à chaque repostionnement ou chaque resize, avoir une gestion de "constraints"
-// TODO: Vérifier la distance entre les blocs sur les autres axes, ne pas snapper sur les blocs qui ne sont pas proches
 // TODO: Créer les resizer sur les coins
+
+// TODO: Refactor la fonction makeMovable()
 
 class BlocLayout implements IInterfacor {
 	static EVENTS = Object.freeze({
@@ -80,7 +75,8 @@ class BlocLayout implements IInterfacor {
 
 	createElement(): void {
 		this.node = document.createElement("div")
-		this.node.classList.add("layout-bloc", "resizable")
+		this.node.classList.toggle("layout-bloc", true)
+		this.node.classList.toggle("resizable", true)
 
 		if (this.options.zIndex) {
 			this.node.style.zIndex = this.options.zIndex.toString()
@@ -308,6 +304,15 @@ class BlocLayout implements IInterfacor {
 		}
 	}
 
+	reposition() {
+		if (this.node) {
+			this.node.style.left = `${this.position.from.x}vw`
+			this.node.style.right = `${100 - this.position.to.x}vw`
+			this.node.style.top = `${this.position.from.y}vh`
+			this.node.style.bottom = `${100 - this.position.to.y}vh`
+		}
+	}
+
 	createResizers() {
 		if (this.options.resizableX) {
 			this.createResizer("right")
@@ -319,88 +324,100 @@ class BlocLayout implements IInterfacor {
 		}
 	}
 
-	reposition() {
-		if (this.node) {
-			this.node.style.left = `${this.position.from.x}vw`
-			this.node.style.right = `${100 - this.position.to.x}vw`
-			this.node.style.top = `${this.position.from.y}vh`
-			this.node.style.bottom = `${100 - this.position.to.y}vh`
-		}
-	}
-
 	createResizer(side: string) {
 
-		let origins: Record<string, { from: string, opposite: string }> = {
+		let origins: Record<string, { from: string, opposite: string, mainAxe: string, crossAxe: string }> = {
 			"right": {
 				from: "to",
-				opposite: "from"
+				opposite: "from",
+				mainAxe: "x",
+				crossAxe: "y"
 			},
 			"left": {
 				from: "from",
-				opposite: "to"
+				opposite: "to",
+				mainAxe: "x",
+				crossAxe: "y"
 			},
 			"bottom": {
 				from: "to",
-				opposite: "from"
+				opposite: "from",
+				mainAxe: "y",
+				crossAxe: "x"
 			},
 			"top": {
 				from: "from",
-				opposite: "to"
+				opposite: "to",
+				mainAxe: "y",
+				crossAxe: "x"
 			},
 		}
+
 		// Les variables à utiliser
-		let axe = ["right", "left"].includes(side) ? "x" : "y"
-		let crossAxe = axe === "x" ? "y" : "x"
-		let from = origins[side].from
-		let oppositeFrom = origins[side].opposite
+		let mainAxe = origins[side].mainAxe as keyof MiniVector2
+		let crossAxe = origins[side].crossAxe as keyof MiniVector2
+		let from = origins[side].from as keyof _BlocLayoutPosition
+		let oppositeFrom = origins[side].opposite as keyof _BlocLayoutPosition
 
-		// La fonction commence ici
+		// If node exists to the DOM
 		if (this.node) {
-			let snapStrength = this.options.snapStrength || 0
-			let resizer = document.createElement("div")
-			resizer.classList.add("resizer", "resizer-" + side)
 
+			let snapStrength = this.options.snapStrength || 0
+
+			// Create and element to DOM
+			let resizer = document.createElement("div")
+			resizer.classList.toggle("resizer", true)
+			resizer.classList.toggle("resizer-" + side, true)
 			this.node.appendChild(resizer)
 
+			// Handle the resizing when click is down
 			resizer.addEventListener("mousedown", (e: MouseEvent) => {
 				e.preventDefault()
 				e.stopPropagation()
-				document.body.classList.add("resize-" + axe)
+				document.body.classList.toggle("resize-" + mainAxe, true)
 
+				// If node exists to the DOM
 				if (this.node) {
-					this.node.classList.add("resizing-" + side)
+
+					// Add classes to apply specific style
+					this.node.classList.toggle("resizing-" + side, true)
 					this.node.classList.toggle("moving", true)
 
+					// Handle the resizing constraints while moving the mouse (snap to other blocs, border limits ...)
 					const mouseMoveHandler = (e: MouseEvent) => {
 						e.preventDefault()
 						e.stopPropagation()
 
-						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY)
-						let pos = (mousePosition[axe as keyof MiniVector2])
+						// Get mouse position transform from 0 to 100
+						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY) //TODO: Trouver un autre endroit que GuiLayout où positionner cette méthode
 
+						// Get mopuse position on current main axe
+						let pos = mousePosition[mainAxe]
+
+						// Check collisions/snappings with other blocs
 						for (let i = 0; i < this.layout.blocs.length; i++) {
 
 							let bloc = this.layout.blocs[i]
 
+							// Doesn't apply calculation on current bloc
 							if (bloc !== this) {
 
+								// Check if the bloc is close enough to apply calculation (with snapStrength)
 								if (
-									bloc.position.from[crossAxe as keyof MiniVector2] < (this.position.to[crossAxe as keyof MiniVector2] + snapStrength)
+									bloc.position.from[crossAxe] < (this.position.to[crossAxe] + snapStrength)
 									&&
-									bloc.position.to[crossAxe as keyof MiniVector2] > (this.position.from[crossAxe as keyof MiniVector2] - snapStrength)
+									bloc.position.to[crossAxe] > (this.position.from[crossAxe] - snapStrength)
 								) {
 
-									if (
-										Math.abs(mousePosition[axe as keyof MiniVector2] - bloc.position[from as keyof _BlocLayoutPosition][axe as keyof MiniVector2]) < snapStrength
-									) {
-										pos = bloc.position[from as keyof _BlocLayoutPosition][axe as keyof MiniVector2]
+									// Check is current edge is close enough to snap on first edge of other bloc within the main axe
+									if (Math.abs(mousePosition[mainAxe] - bloc.position[from][mainAxe]) < snapStrength) {
+										pos = bloc.position[from][mainAxe]
 										break;
 									}
 
-									if (
-										Math.abs(mousePosition[axe as keyof MiniVector2] - bloc.position[oppositeFrom as keyof _BlocLayoutPosition][axe as keyof MiniVector2]) < snapStrength
-									) {
-										pos = bloc.position[oppositeFrom as keyof _BlocLayoutPosition][axe as keyof MiniVector2]
+									// Check is current edge is close enough to snap on second edge of other bloc within the main axe
+									if (Math.abs(mousePosition[mainAxe] - bloc.position[oppositeFrom][mainAxe]) < snapStrength) {
+										pos = bloc.position[oppositeFrom][mainAxe]
 										break;
 									}
 
@@ -409,18 +426,22 @@ class BlocLayout implements IInterfacor {
 							}
 						}
 
+						// Calculate if current edge is passing through layout border and reposition it to the limits with snapStrength
 						pos = pos > 100 - snapStrength ? 100 : (pos < snapStrength ? 0 : pos)
 
-						this.position[from as keyof _BlocLayoutPosition][axe as keyof MiniVector2] = Math.abs(this.position[oppositeFrom as keyof _BlocLayoutPosition][axe as keyof MiniVector2] - pos) >= snapStrength ? pos : this.position[oppositeFrom as keyof _BlocLayoutPosition][axe as keyof MiniVector2]
-						this.position.size[axe as keyof MiniVector2] = Math.abs(this.position[from as keyof _BlocLayoutPosition][axe as keyof MiniVector2] - this.position[oppositeFrom as keyof _BlocLayoutPosition][axe as keyof MiniVector2])
+						// Finally apply calculted new position of the edge et recalculate size of the bloc
+						this.position[from][mainAxe] = Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength ? pos : this.position[oppositeFrom][mainAxe]
+						this.position.size[mainAxe] = Math.abs(this.position[from][mainAxe] - this.position[oppositeFrom][mainAxe])
 
+						// Emit an event on observer to annouce the bloc has resized
 						this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE)
 					}
 
+					// Reinitialize classes and events to original after the mouse click is up
 					const mouseUpHandler = (e: MouseEvent) => {
 						e.preventDefault()
 						e.stopPropagation()
-						document.body.classList.toggle("resize-" + axe, false)
+						document.body.classList.toggle("resize-" + mainAxe, false)
 						if (this.node) {
 							this.node.classList.toggle("resizing-" + side, false)
 							this.node.classList.toggle("moving", false)
