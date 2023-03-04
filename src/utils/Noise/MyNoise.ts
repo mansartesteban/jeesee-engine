@@ -1,17 +1,17 @@
 import MathUtils from "@utils/MathUtils";
 
 /*
-Todo : 
-  Gï¿½rer la dispersion :
+TODO : 
+  Gérer la dispersion :
     - Recevoir une variable entre 0 et 1 (0 = aucune dispersion = ligne droite, 1 = totalement disperser = chaotique)
-    - Et chaque valeur suivante devra ï¿½tre un facteur en -dispersion et +dispersion de la valeur prï¿½cï¿½dente
-  Gï¿½rer la prï¿½cision
-    - Crï¿½er un valeur intermï¿½diaire entre 2 valeurs qui est ï¿½loignï¿½e de +/- dispersion
-  Gï¿½rer la frï¿½quence ?
-  Gï¿½rer l'amplitude ? (dispersion ?)
-  Gï¿½rer la roughness
-  Gï¿½rer la 2D et 3D ?
-  Gï¿½rer la gï¿½nï¿½ration avec seed
+    - Et chaque valeur suivante devra être un facteur en -dispersion et +dispersion de la valeur précédente
+  Gérer la précision
+    - Créer un valeur intermédiaire entre 2 valeurs qui est éloignée de +/- dispersion
+  Gérer la fréquence ?
+  Gérer l'amplitude ? (dispersion ?)
+  Gérer la roughness
+  Gérer la 2D et 3D ?
+  Gérer la génération avec seed
 */
 
 class MyNoise {
@@ -20,9 +20,9 @@ class MyNoise {
   static dispersion = 0.1;
 
   static random() {
-    this.arr = []
+    this.arr = [];
     for (let i = 0; i < 100; i++) {
-      this.arr.push(Math.random())
+      this.arr.push(Math.random());
     }
   }
   static regenerate(amount: number = 100) {
@@ -66,9 +66,9 @@ class MyNoise {
     let next = this.arr[nearestIndex + 1];
     let nextNext = this.arr[nearestIndex + 2];
 
-    if (!prev && prev != 0) prev = current + current - next; // Si elles n'existent pas, crï¿½er des valeurs fantï¿½mes en miroir basï¿½es sur les prï¿½cï¿½dentes et suivantes
-    if (!next && next != 0) next = current + current - prev; // Si elles n'existent pas, crï¿½er des valeurs fantï¿½mes en miroir basï¿½es sur les prï¿½cï¿½dentes et suivantes
-    if (!nextNext && nextNext != 0) nextNext = next + next - current; // Si elles n'existent pas, crï¿½er des valeurs fantï¿½mes en miroir basï¿½es sur les prï¿½cï¿½dentes et suivantes
+    if (!prev && prev != 0) prev = current + current - next; // Si elles n'existent pas, créer des valeurs fantômes en miroir basées sur les précédentes et suivantes
+    if (!next && next != 0) next = current + current - prev; // Si elles n'existent pas, créer des valeurs fantômes en miroir basées sur les précédentes et suivantes
+    if (!nextNext && nextNext != 0) nextNext = next + next - current; // Si elles n'existent pas, créer des valeurs fantômes en miroir basées sur les précédentes et suivantes
 
     let ret = this.cubicHermite(prev, current, next, nextNext, indexFound % 1);
     return ret;

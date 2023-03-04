@@ -1,7 +1,7 @@
 interface Window {
-  __jeesee__: number
+  __jeesee__: number;
 }
 
 export {
   Window
-}
+};

@@ -6,23 +6,23 @@ import RigidBody from "./RigidBody";
 class Ground extends Actor {
 
     constructor(options?: IActorOptionsInterface) {
-        super(options)
+        super(options);
     }
 
     create() {
 
-        let radius = 10
+        let radius = 10;
 
-        this.geometry = new SphereGeometry(radius, 50, 25)
-        this.material = new MeshPhongMaterial({ color: "#00FF00" })
-        this.object = new Mesh(this.geometry, this.material)
+        this.geometry = new SphereGeometry(radius, 50, 25);
+        this.material = new MeshPhongMaterial({ color: "#00FF00" });
+        this.object = new Mesh(this.geometry, this.material);
 
-        console.log(this.object.position)
-    
+        console.log(this.object.position);
+
     }
 
 
 
 }
 
-export default Ground
+export default Ground;

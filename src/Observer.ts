@@ -1,17 +1,17 @@
-import { _LocalObserver, IObserver } from "@types"
+import { _LocalObserver, IObserver } from "@types";
 
 class Observer implements IObserver {
   observers: _LocalObserver[];
-  events: {[key: string]: string} = {};
+  events?: { [key: string]: string; } = {};
 
-  constructor(events: {[key: string]: string}) {
+  constructor(events?: { [key: string]: string; }) {
     this.observers = [];
     this.events = events;
   }
 
   $on(events: string | string[], callback: Function): this {
     if (typeof events == "string") {
-      events = [events]
+      events = [events];
     }
 
     events.forEach(event => {
@@ -21,8 +21,8 @@ class Observer implements IObserver {
         event,
         callback,
       });
-    })
-    
+    });
+
 
     return this;
   }
@@ -46,9 +46,12 @@ class Observer implements IObserver {
   }
 
   isValidEvent(event: string) {
-    if (!Object.keys(this.events).includes(event))
-      throw new Error(`Event '${event}' is not a valid event`);
+    if (this.events) {
+      if (!Object.keys(this.events).includes(event)) {
+        throw new Error(`Event '${event}' is not a valid event`);
+      }
+    }
   }
 }
 
-export default Observer
+export default Observer;

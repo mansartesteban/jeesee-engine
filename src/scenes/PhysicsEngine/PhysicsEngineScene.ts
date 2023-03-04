@@ -1,51 +1,51 @@
-import Scene from "@/Scene"
-import { AmbientLight, LineSegments, Material, Mesh, MeshBasicMaterial, MeshPhongMaterial, PlaneGeometry, PointLight, SphereGeometry, Vector3, WireframeGeometry } from "three"
-import Ball from "./Actors/Ball"
-import Ground from "./Actors/Ground"
-import Controls from "@/Controls"
-import Cube from "./Actors/Cube"
-import MathUtils from "@utils/MathUtils"
+import Scene from "@/Scene";
+import { AmbientLight, LineSegments, Material, Mesh, MeshBasicMaterial, MeshPhongMaterial, PlaneGeometry, PointLight, SphereGeometry, Vector3, WireframeGeometry } from "three";
+import Ball from "./Actors/Ball";
+import Ground from "./Actors/Ground";
+import Controls from "@/Controls";
+import Cube from "./Actors/Cube";
+import MathUtils from "@utils/MathUtils";
 
-const geometry = new SphereGeometry(10, 8, 4)
-const material = new MeshPhongMaterial({ color: 0xff5225 })
+const geometry = new SphereGeometry(10, 8, 4);
+const material = new MeshPhongMaterial({ color: 0xff5225 });
 
 class PhysicsEngineScene extends Scene {
 
-    controls: Controls
+    controls: Controls;
 
-	constructor() {
-		super()
+    constructor() {
+        super();
 
-        this.controls = new Controls(this.camera, this.renderer)
-	}
+        this.controls = new Controls(this.camera, this.renderer);
+    }
 
     init() {
 
-        let ground = new Ground({ gravity: true, enableCollisionResponse: false})
+        let ground = new Ground({ gravity: true, enableCollisionResponse: false });
         if (ground.object) {
-            ground.object.position.copy(new Vector3(100, 10, -60))
+            ground.object.position.copy(new Vector3(100, 10, -60));
         }
-        this.sceneManager.add(ground, "ground")
+        this.sceneManager.add(ground, "ground");
 
-        let ball = new Ball({ material, geometry})
-        this.sceneManager.add(ball)
+        let ball = new Ball({ material, geometry });
+        this.sceneManager.add(ball);
 
         // console.log(ground.mass, ball.mass)
 
 
-        let light = new PointLight(0xFFFFFF, 1, 10000)
-        light.position.x = 200
-        light.position.y = 500
-        light.position.z = -200
-        this.scene?.add(light)
-        
-        let ambiantLight = new AmbientLight(0xDDFFFF, .75)
-        this.scene.add(ambiantLight)
+        let light = new PointLight(0xFFFFFF, 1, 10000);
+        light.position.x = 200;
+        light.position.y = 500;
+        light.position.z = -200;
+        this.scene?.add(light);
 
-        light = new PointLight(0xFFFFFF, 1, 10000)
-        light.position.x = -1000
-        light.position.y = -1000
-        this.scene?.add(light)
+        let ambiantLight = new AmbientLight(0xDDFFFF, .75);
+        this.scene.add(ambiantLight);
+
+        light = new PointLight(0xFFFFFF, 1, 10000);
+        light.position.x = -1000;
+        light.position.y = -1000;
+        this.scene?.add(light);
 
         // document.addEventListener("click", () => {
         //     let del = Math.random() > .5
@@ -68,7 +68,7 @@ class PhysicsEngineScene extends Scene {
 
     update(tick: number) {
         if (this.controls) {
-            this.controls.update(tick)
+            this.controls.update(tick);
         }
 
         // let del = Math.random() > .5
@@ -108,4 +108,4 @@ class PhysicsEngineScene extends Scene {
     }
 }
 
-export default PhysicsEngineScene
+export default PhysicsEngineScene;

@@ -1,5 +1,5 @@
 class MainInput {
-    
+
 }
 
-export default MainInput
+export default MainInput;

@@ -23,6 +23,7 @@
   --warning-color: ;
   --success-color: ;
   --error-color: ;
+  --ggs: .7;
 }
 
 // Accessibility
@@ -31,20 +32,18 @@
 }
 
 
-
 $transitionDuration: .5s;
 $transitionTiming: ease-out;
 
 .actions {
   position: fixed;
   top: 32px;
-  right: 32px;
+  right: 320px;
   z-index: 100000;
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 200px;
-  ;
 }
 
 button {
@@ -88,7 +87,7 @@ button {
     border: 1px solid rgba(255, 255, 255, .1);
     margin: -.5px;
 
-    &::after {
+    &::before {
       content: "";
       position: absolute;
       top: 0;
@@ -98,14 +97,36 @@ button {
       opacity: 0;
       box-shadow: 2px 2px 25px rgba(0, 0, 0, .25);
       transition: opacity $transitionDuration $transitionTiming;
+      z-index: -1;
     }
 
-    &.moving::after {
+    &.moving::before {
       opacity: 1;
     }
 
     &.moving {
       z-index: 1000 !important;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: end;
+      padding: .087em;
+
+      .action-bar-button {
+
+        padding: .087em;
+        border-radius: 6px;
+        transition: background-color $transitionDuration $transitionTiming;
+        cursor: pointer;
+
+        &:hover {
+          background: rgba(255, 255, 255, .1);
+        }
+      }
+
     }
 
   }
@@ -179,6 +200,8 @@ button {
 
     }
   }
+
+
 
 }
 

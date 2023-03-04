@@ -1,8 +1,8 @@
-import Planet from "@/actors/StellarSystem/Planet"
-import PointLight from "@/actors/StellarSystem/PointLight"
-import Star from "@/actors/StellarSystem/Star"
-import Scene from "@/Scene"
-import StellarSystem from "@actors/StellarSystem/StellarSystem"
+import Planet from "@/actors/StellarSystem/Planet";
+import PointLight from "@/actors/StellarSystem/PointLight";
+import Star from "@/actors/StellarSystem/Star";
+import Scene from "@/Scene";
+import StellarSystem from "@actors/StellarSystem/StellarSystem";
 
 import {
 	BoxGeometry,
@@ -14,67 +14,67 @@ import {
 	Scene as ThreeScene,
 	Vector3,
 	WebGLRenderer,
-} from "three"
+} from "three";
 
 class MainScene extends Scene {
-	cube?: Mesh
+	cube?: Mesh;
 
 	constructor() {
-		super()
+		super();
 	}
 
 	init(): void {
 		let sterllarSystem = new StellarSystem();
-		this.sceneManager.add(sterllarSystem)
+		this.sceneManager.add(sterllarSystem);
 
-		let pointLight
+		let pointLight;
 
 		pointLight = new PointLight({
 			position: new Vector3(100, 100, 100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(-100, -100, -100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(100, 100, -100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(100, -100, 100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(100, -100, -100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(-100, 100, 100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(-100, 100, -100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
 		pointLight = new PointLight({
 			position: new Vector3(-100, -100, 100)
 		});
-    	this.sceneManager.add(pointLight)
+		this.sceneManager.add(pointLight);
 
-	
-		
+
+
 	}
 
 	update(): void {
 	}
 }
 
-export default MainScene
+export default MainScene;

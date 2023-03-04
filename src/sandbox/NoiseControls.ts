@@ -1,18 +1,18 @@
 class NoiseControls {
 
-  static amplitude = 0
+  static amplitude = 0;
 
   static create() {
-    let container = document.createElement("div")
-        container.id = "controls";
+    let container = document.createElement("div");
+    container.id = "controls";
 
-    let amplitudeSlider = document.createElement("input")
-        amplitudeSlider.type = "range"
+    let amplitudeSlider = document.createElement("input");
+    amplitudeSlider.type = "range";
 
-        amplitudeSlider.value = this.amplitude.toString()
-    
+    amplitudeSlider.value = this.amplitude.toString();
 
-    container.appendChild(amplitudeSlider)
+
+    container.appendChild(amplitudeSlider);
     document.body.appendChild(container);
   }
 
@@ -22,4 +22,4 @@ class NoiseControls {
 
 }
 
-export default NoiseControls
+export default NoiseControls;

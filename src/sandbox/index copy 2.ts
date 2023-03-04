@@ -6,7 +6,6 @@ import "@assets/styles/_jeesee.scss";
 import Game from "@/Game";
 import MyNoise from "@utils/Noise/MyNoise";
 import { SplineCurve, Vector2 } from "three";
-import NoiseControls from "./sandbox/NoiseControls";
 
 
 // const canvas = document.createElement("canvas");
@@ -52,32 +51,32 @@ import NoiseControls from "./sandbox/NoiseControls";
 //   let dotSize  = 2
 //   if (canvas.getContext) {
 //     const ctx = canvas.getContext("2d");
-  
-  
+
+
 //     if (ctx) {
-  
-      
+
+
 //       let pos = new Vector2(0, 0);
 //       for (let i = 0 ; i <= 100 ; i++) {
-  
+
 //         ctx.strokeStyle = "#aaaaaa"
 //         if (i % 5 === 0) {
 //           ctx.strokeStyle = "#000000";
 //         }
 //         pos.x = 0;
 //         pos.y = MyNoise.mapRange(i, 0, 100, 0, canvas.height);
-  
-        
+
+
 //         ctx.beginPath();
 //         ctx.moveTo(pos.x, pos.y);
-        
+
 //         pos.x = canvas.width;
-  
+
 //         ctx.lineTo(pos.x, pos.y);
 //         ctx.lineWidth = 1;
 //         ctx.stroke();
 //         ctx.closePath();
-  
+
 //         if (i%5===0) {
 //           ctx.font = "24px Consolas"
 //           ctx.fillStyle = "#ffffFF"
@@ -86,14 +85,14 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           ctx.fillText(i.toString(), 7, pos.y -10);
 //         }
 //       }
-  
+
 //       for (let i = 0; i < MyNoise.arr.length; i++) {
-  
+
 //         let current = new Vector2(
 //           MyNoise.mapRange(i, 0, MyNoise.arr.length, 0, canvas.width),
 //           MyNoise.mapRange(MyNoise.arr[i], 0, 1, 0, canvas.height)
 //         );
-  
+
 //         if (i > 0) {
 //           ctx.strokeStyle = "#00FF00";
 //           let last = new Vector2(
@@ -106,10 +105,10 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           ctx.stroke();
 //           ctx.closePath();
 //         }
-        
+
 //         ctx.fillStyle = "#FF0000";
 //         ctx.fillRect(current.x - dotSize/2, current.y - dotSize/2, dotSize, dotSize);
-        
+
 //         rects.push({
 //           from: new Vector2(current.x - dotSize * 2, current.y - dotSize * 2),
 //           to: new Vector2(current.x + dotSize * 2, current.y + dotSize *2),
@@ -118,10 +117,10 @@ import NoiseControls from "./sandbox/NoiseControls";
 //             index: i,
 //           },
 //         });
-  
+
 //       }
-  
-  
+
+
 //       // console.log("main array", MyNoise.arr)
 //       let steps = .001
 //       for (let i = 0; i <= 1; i += steps) {
@@ -131,7 +130,7 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           MyNoise.mapRange(i, 0, 1, 0, canvas.width),
 //           MyNoise.mapRange(v, 0, 1, 0, canvas.height)
 //         );
-  
+
 //         if (i > 0) {
 //           // console.log("PREVIOUS");
 //           ctx.strokeStyle = "#0000FF";
@@ -146,7 +145,7 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           ctx.stroke();
 //           ctx.closePath();
 //         }
-  
+
 //         ctx.fillStyle = "#FF00FF";
 //         ctx.fillRect(
 //           current.x - dotSize / 2,
@@ -154,7 +153,7 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           dotSize,
 //           dotSize
 //         );
-  
+
 //         rects.push({
 //           from: new Vector2(current.x - dotSize * 2, current.y - dotSize * 2),
 //           to: new Vector2(
@@ -167,8 +166,8 @@ import NoiseControls from "./sandbox/NoiseControls";
 //           }
 //         });
 //       }
-  
-  
+
+
 //     }
 //   }
 // }
@@ -186,7 +185,7 @@ import NoiseControls from "./sandbox/NoiseControls";
 
 
 //   if (rect) {
-    
+
 //     infos.innerHTML = rect.datas.index + "<br>" + rect.datas.value
 //     infos.style.top = (ev.clientY + 20) + "px"
 //     infos.style.left = (ev.clientX + 20) + "px"
@@ -197,15 +196,15 @@ import NoiseControls from "./sandbox/NoiseControls";
 
 // });
 
-const game = new Game()
+const game = new Game();
 
 window.__jeesee__ = {
     game: game,
     helpers: {
     }
-}
+};
 
-game.start()
+game.start();
 
 // for (let i = 0 ; i < 20 ; i++) {
 //   let val = Math.random()

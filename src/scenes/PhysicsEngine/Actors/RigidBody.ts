@@ -1,6 +1,6 @@
-import Actor from "@actors/Actor"
-import { IActorOptionsInterface } from "@types"
-import { Object3D, SphereGeometry, Vector3 } from "three"
+import Actor from "@actors/Actor";
+import { IActorOptionsInterface } from "@types";
+import { Object3D, SphereGeometry, Vector3 } from "three";
 
 class RigidBody extends Actor {
 
@@ -10,76 +10,76 @@ class RigidBody extends Actor {
         mass: 1,
         enableCollision: true,
         enableCollisionResponse: true
-    }
+    };
 
-    gravityConstant: number = 9.81
-    gravityOrigin: Vector3 = new Vector3(0, 0, 0)
+    gravityConstant: number = 9.81;
+    gravityOrigin: Vector3 = new Vector3(0, 0, 0);
 
-    mass: number = 1
-    acceleration: Vector3 = new Vector3(0, 0, 0)
-    lastPosition: Vector3 = new Vector3(0, 0, 0)
-    velocity: Vector3 = new Vector3(0, 0, 0)
-    friction: number = .999
-    isRigidBody: boolean = true
-    energy: number = 1 // Todo calculer l'enrgie par rapport à la masse
+    mass: number = 1;
+    acceleration: Vector3 = new Vector3(0, 0, 0);
+    lastPosition: Vector3 = new Vector3(0, 0, 0);
+    velocity: Vector3 = new Vector3(0, 0, 0);
+    friction: number = .999;
+    isRigidBody: boolean = true;
+    energy: number = 1; // Todo calculer l'enrgie par rapport à la masse
 
-    dt: number = .1
+    dt: number = .1;
 
     // _gravity: number = -1
     // _acceleration: number = 0
     // _lastPosition: number = 1
 
     constructor(options?: IActorOptionsInterface) {
-        super(options)
+        super(options);
 
         if (options) {
-            this.options = {...this.options, ...options}
+            this.options = { ...this.options, ...options };
         }
 
-        this.initialize()
+        this.initialize();
         if (this.options.gravityOrigin) {
-            this.gravityOrigin = this.options.gravityOrigin
+            this.gravityOrigin = this.options.gravityOrigin;
         }
 
     }
 
     initialize() {
-        this.mass = this.options.mass || 1
+        this.mass = this.options.mass || 1;
         if (this.geometry) {
-            this.mass = (4/3) * Math.PI * Math.pow((this.geometry as SphereGeometry).parameters.radius / 2, 3)
+            this.mass = (4 / 3) * Math.PI * Math.pow((this.geometry as SphereGeometry).parameters.radius / 2, 3);
         }
     }
 
     updateRigidBody(tick: number) {
-        this.applyGravity()
+        this.applyGravity();
         // this.updatePosition(tick)
         // for (let i = 0  ; i < 20 ; i++) {
-            // this.calculateCollision()
-            this.updatePosition(tick)
+        // this.calculateCollision()
+        this.updatePosition(tick);
         // }
-        
+
     }
 
     calculateCollision() {
 
         if (window.__jeesee__.game.scene?.sceneManager) {
-            let entities = window.__jeesee__.game.scene?.sceneManager.entities
+            let entities = window.__jeesee__.game.scene?.sceneManager.entities;
 
-            let radius = (this.geometry as SphereGeometry).parameters.radius
+            let radius = (this.geometry as SphereGeometry).parameters.radius;
 
             entities.forEach(entity => { // Todo : Trouver un moyen de ne pas toutes les parcourir
-                
+
                 if (this.object && entity !== this) { // Ne pas calculer sur l'entité en cours
 
-                    
+
                     if (entity && entity.object && entity.geometry && entity instanceof RigidBody && this instanceof RigidBody) {
-                        
+
                         // Calcule les collisions si elles sont activées
                         if (this.options.enableCollision) {
 
                             if (entity.geometry instanceof SphereGeometry) {
-                            
-                                let penetrationDepth = entity.geometry.parameters.radius + radius - entity.object.position.distanceTo(this.object.position)
+
+                                let penetrationDepth = entity.geometry.parameters.radius + radius - entity.object.position.distanceTo(this.object.position);
 
                                 if (penetrationDepth > 0) {
 
@@ -92,10 +92,10 @@ class RigidBody extends Actor {
                                     // let penetrationResponse = dist
                                     //     .normalize()
                                     //     .multiplyScalar(penetrationDepth)
-                
+
                                     // let penetrationResponseThis = this.options.enableCollisionResponse ? (entity.options.enableCollisionResponse ? 1 : 2) : 0
                                     // let penetrationResponseObject = entity.options.enableCollisionResponse ? (this.options.enableCollisionResponse ? 1 : 2) : 0
-                
+
                                     // entity.object.position.add(penetrationResponse.divideScalar(penetrationResponseObject))
                                     // this.object.position.add(penetrationResponse.divideScalar(-penetrationResponseThis))
 
@@ -118,14 +118,14 @@ class RigidBody extends Actor {
                         }
                     }
                 }
-                
-            })
+
+            });
         }
 
     }
 
     /*
-        Todo :
+        TODO:
         - Pouvoir indiquer la source de la gravité
         - Ajouter des type de collision et appliquer des calculs différents (sphere, capsule, plan)
             - Pour chaque RigidBody, avoir un tableau de "collisionResolvers"
@@ -142,12 +142,9 @@ class RigidBody extends Actor {
                 - sinon indiquer la masse en "auto", elle sera de la valeur du volume
                 - sinon accepter une valeur
 
-        - Trouver un moyen plus propre de récupérer le scene manager que window?.__jeesee__
-
         Priorité :
         - Créer une class qui permet d'avoir des champs modifiables et reliés à une valeur d'un actor ou d'autres valeurs plus globales (tick, scene manager ...)
             - Récupérer toutes les propriétés publics de chaque objet
-            - Avoir une arborescence des objets (actor) dans la scene et pour les déplier pour accéder à leur valeur modifiables
         - Création de scene
             - Bouton "+" créer un scene
             - Pouvoir cliquer glisser des actors dans la scene
@@ -170,7 +167,7 @@ class RigidBody extends Actor {
                 if (window.__jeesee__.game.scene?.sceneManager) {
                     // let entities = window.__jeesee__.game.scene?.sceneManager.entities
                     // entities.forEach(entity => {
-                        
+
                     //     if (entity !== this && entity.object && entity instanceof RigidBody && this.object) {
 
                     //         let dist = entity.object.position.distanceTo(this.object.position)
@@ -206,7 +203,7 @@ class RigidBody extends Actor {
     updatePosition(tick: number) {
         if (this.object) {
             // this.lastPosition = this.object.position.clone()
-            this.object.position.add(this.velocity.multiplyScalar(.5))
+            this.object.position.add(this.velocity.multiplyScalar(.5));
             // this.velocity = this.object.position.clone().sub(this.lastPosition)
             // this.energy *= .999995
         }
@@ -215,4 +212,4 @@ class RigidBody extends Actor {
 
 }
 
-export default RigidBody
+export default RigidBody;

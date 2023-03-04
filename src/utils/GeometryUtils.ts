@@ -1,4 +1,4 @@
-import { Object3D, Quaternion, Vector3 } from "three"
+import { Object3D, Quaternion, Vector3 } from "three";
 
 class GeometryUtils {
 	static rotateAroundAxis(
@@ -9,15 +9,15 @@ class GeometryUtils {
 		if (!(object instanceof Object3D)) {
 			throw new Error(
 				"Argument 'object' must be an instance of THREE.Object3D"
-			)
+			);
 		}
 
-		let q = new Quaternion()
-		q.setFromAxisAngle(axis, angle)
+		let q = new Quaternion();
+		q.setFromAxisAngle(axis, angle);
 
-		object.applyQuaternion(q)
-		object.position.applyQuaternion(q)
+		object.applyQuaternion(q);
+		object.position.applyQuaternion(q);
 	}
 }
 
-export default GeometryUtils
+export default GeometryUtils;

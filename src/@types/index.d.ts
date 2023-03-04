@@ -6,8 +6,8 @@ declare global {
     var __jeesee__: {
         game: Game,
         helpers: {
-        }
-    }
+        };
+    };
 }
 
 interface IObserver {
@@ -22,39 +22,39 @@ interface IObserver {
 
 type _LocalObserver = {
     event: string,
-    callback: Function
-}
+    callback: Function;
+};
 
 interface IEntity {
-    name: string
-    parent: string | null
-    object: Object3D | null
-    children: IEntity[]
-    options?: _ActorOptions
-    updateLoop(tick: number): void
+    name: string;
+    parent: string | null;
+    object: Object3D | null;
+    children: IEntity[];
+    options?: _ActorOptions;
+    updateLoop(tick: number): void;
 }
 
 type _ActorOptions = {
     position?: Vector3,
     rotation?: Vector3,
-    scale?: Vector3
+    scale?: Vector3;
 
     material?: Material,
-    geometry?: BufferGeometry
-}
+    geometry?: BufferGeometry;
+};
 
 type _RigidBodyOptions = {
     gravity?: boolean,
     mass?: number,
     enableCollision?: boolean,
     enableCollisionResponse?: boolean,
-    gravityOrigin?: Vector3
-}
+    gravityOrigin?: Vector3;
+};
 
 type _GridLayoutOptions = {
     rows: number,
-    columns: number
-}
+    columns: number;
+};
 
 type _BlocLayoutOptions = {
     x?: number,
@@ -67,19 +67,20 @@ type _BlocLayoutOptions = {
     actionBar?: boolean,
     class?: string,
     snapStrength?: number,
-    resizerSize?: number
-}
+    resizerSize?: number;
+};
 
 type _BlocLayoutPosition = {
     from: MiniVector2,
     to: MiniVector2,
-    size: MiniVector2
-}
+    size: MiniVector2;
+};
 
-interface IInterfacor {
-    node: Node | null
-    createElement(): void
-}
+type _ActionBarItem = {
+    label?: string,
+    callback?: Function,
+    icon?: string;
+};
 
 interface IActorOptionsInterface extends _ActorOptions, _RigidBodyOptions { }
 
@@ -90,8 +91,8 @@ export {
     _LocalObserver,
 
     //Layouts
-    IInterfacor,
     _GridLayoutOptions,
     _BlocLayoutOptions,
-    _BlocLayoutPosition
-}
+    _BlocLayoutPosition,
+    _ActionBarItem
+};

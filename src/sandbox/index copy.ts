@@ -10,13 +10,13 @@ import { SplineCurve, Vector2 } from "three";
 const canvas = document.createElement("canvas");
 
 
-window.devicePixelRatio=2;
+window.devicePixelRatio = 2;
 var sizeX = window.innerWidth;
 var sizeY = window.innerHeight;
 var scale = window.devicePixelRatio;
 let rects: any = [];
 
-resizeCanvas()
+resizeCanvas();
 
 function resizeCanvas() {
   sizeX = window.innerWidth;
@@ -25,7 +25,7 @@ function resizeCanvas() {
   canvas.style.height = sizeY + "px";
   canvas.width = Math.floor(sizeX * scale);
   canvas.height = Math.floor(sizeY * scale);
-  draw()
+  draw();
 }
 
 
@@ -35,58 +35,58 @@ function resizeCanvas() {
  ~43min
 */
 
-window.addEventListener("resize", resizeCanvas)
+window.addEventListener("resize", resizeCanvas);
 document.body.appendChild(canvas);
-draw()
+draw();
 function draw() {
 
-  let dotSize  = 5
+  let dotSize = 5;
   if (canvas.getContext) {
     const ctx = canvas.getContext("2d");
-  
+
     // MyNoise.regenerate()
-  
+
     if (ctx) {
-  
-      
+
+
       let pos = new Vector2(0, 0);
-      for (let i = 0 ; i <= 100 ; i++) {
-  
-        ctx.strokeStyle = "#aaaaaa"
+      for (let i = 0; i <= 100; i++) {
+
+        ctx.strokeStyle = "#aaaaaa";
         if (i % 5 === 0) {
           ctx.strokeStyle = "#000000";
         }
         pos.x = 0;
         pos.y = MyNoise.mapRange(i, 0, 100, 0, canvas.height);
-  
-        
+
+
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
-        
+
         pos.x = canvas.width;
-  
+
         ctx.lineTo(pos.x, pos.y);
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.closePath();
-  
-        if (i%5===0) {
-          ctx.font = "24px Consolas"
-          ctx.fillStyle = "#ffffFF"
-          ctx.fillRect(3, pos.y - 30, 18 * i.toString().length, 28)
-          ctx.fillStyle = "#000000"
-          ctx.fillText(i.toString(), 7, pos.y -10);
+
+        if (i % 5 === 0) {
+          ctx.font = "24px Consolas";
+          ctx.fillStyle = "#ffffFF";
+          ctx.fillRect(3, pos.y - 30, 18 * i.toString().length, 28);
+          ctx.fillStyle = "#000000";
+          ctx.fillText(i.toString(), 7, pos.y - 10);
         }
       }
-  
-          
+
+
       for (let i = 0; i < MyNoise.arr.length; i++) {
-  
+
         let current = new Vector2(
           MyNoise.mapRange(i, 0, MyNoise.arr.length, 0, canvas.width),
           MyNoise.mapRange(MyNoise.arr[i], 0, 100, 0, canvas.height)
         );
-  
+
         if (i > 0) {
           // console.log("i > 0")
           ctx.strokeStyle = "#00FF00";
@@ -100,24 +100,24 @@ function draw() {
           ctx.stroke();
           ctx.closePath();
         }
-        
+
         ctx.fillStyle = "#FF0000";
-        ctx.fillRect(current.x - dotSize/2, current.y - dotSize/2, dotSize, dotSize);
-        
+        ctx.fillRect(current.x - dotSize / 2, current.y - dotSize / 2, dotSize, dotSize);
+
         rects.push({
           from: new Vector2(current.x - dotSize * 2, current.y - dotSize * 2),
-          to: new Vector2(current.x + dotSize * 2, current.y + dotSize *2),
+          to: new Vector2(current.x + dotSize * 2, current.y + dotSize * 2),
           datas: {
             value: MyNoise.arr[i],
             index: i,
           },
         });
-  
+
       }
-  
-  
+
+
       // console.log("main array", MyNoise.arr)
-      let steps = .001
+      let steps = .001;
       for (let i = 0; i <= 1; i += steps) {
         let v = MyNoise.noise(i);
         // console.log("CURRENT")
@@ -125,7 +125,7 @@ function draw() {
           MyNoise.mapRange(i, 0, 1, 0, canvas.width),
           MyNoise.mapRange(v, 0, 100, 0, canvas.height)
         );
-  
+
         if (i > 0) {
           // console.log("PREVIOUS");
           ctx.strokeStyle = "#0000FF";
@@ -139,7 +139,7 @@ function draw() {
           ctx.stroke();
           ctx.closePath();
         }
-  
+
         ctx.fillStyle = "#FF00FF";
         ctx.fillRect(
           current.x - dotSize / 2,
@@ -147,7 +147,7 @@ function draw() {
           dotSize,
           dotSize
         );
-  
+
         rects.push({
           from: new Vector2(current.x - dotSize * 2, current.y - dotSize * 2),
           to: new Vector2(
@@ -160,33 +160,33 @@ function draw() {
           }
         });
       }
-  
-  
+
+
     }
   }
 }
 
-console.log("herE?")
+console.log("herE?");
 let infos = document.createElement("div");
 infos.id = "infos";
 infos.style.position = "absolute";
-infos.style.visibility = "hidden"
+infos.style.visibility = "hidden";
 document.body.appendChild(infos);
 
 window.addEventListener("mousemove", (ev: MouseEvent) => {
-  console.log("rect", rects)
+  console.log("rect", rects);
   let rect = rects.find((r: any) => {
-    return r.from.x <= ev.clientX && r.to.x >= ev.clientX && r.from.y <= ev.clientY && r.to.y >= ev.clientY
-  })
+    return r.from.x <= ev.clientX && r.to.x >= ev.clientX && r.from.y <= ev.clientY && r.to.y >= ev.clientY;
+  });
 
   if (rect) {
-    
-    infos.innerHTML = rect.datas.index + "<br>" + rect.datas.value
-    infos.style.top = (ev.clientY + 20) + "px"
-    infos.style.left = (ev.clientX + 20) + "px"
-    infos.style.visibility = "visible"
+
+    infos.innerHTML = rect.datas.index + "<br>" + rect.datas.value;
+    infos.style.top = (ev.clientY + 20) + "px";
+    infos.style.left = (ev.clientX + 20) + "px";
+    infos.style.visibility = "visible";
   } else {
-    infos.style.visibility = "hidden"
+    infos.style.visibility = "hidden";
   }
 
 });
@@ -235,14 +235,14 @@ let precision = 1;
 // }
 
 /*
-Todo : 
-  G�rer la dispersion :
+TODO:
+  Gérer la dispersion :
     - Recevoir une variable entre 0 et 1 (0 = aucune dispersion = ligne droite, 1 = totalement disperser = chaotique)
-    - Et chaque valeur suivante devra �tre un facteur en -dispersion et +dispersion de la valeur pr�c�dente
-  G�rer la pr�cision
-    - Cr�er un valeur interm�diaire entre 2 valeurs qui est �loign�e de +/- dispersion
-  G�rer la fr�quence ?
-  G�rer l'amplitude ? (dispersion ?)
+    - Et chaque valeur suivante devra être un facteur en -dispersion et +dispersion de la valeur précédente
+  Gérer la précision
+    - Créer un valeur intermédiaire entre 2 valeurs qui est éloignée de +/- dispersion
+  Gérer la fréquence ?
+  Gérer l'amplitude ? (dispersion ?)
 */
 
 // console.log("noise", noise(.1))

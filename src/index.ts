@@ -1,47 +1,47 @@
 import "@assets/styles/_reset.scss";
+import "@assets/styles/css.gg.css";
 import "@assets/styles/_jeesee.scss";
 
 import Game from "@/Game";
 import GuiLayout from "./gui/layouts/GuiLayout";
 import { _BlocLayoutOptions, _BlocLayoutPosition } from "@types";
+import BlocLayout from "./gui/layouts/BlocLayout";
 
 
 
 
 
-let layout = new GuiLayout()
-
-// TopBar
-layout.addBloc({
+let layout = new GuiLayout();
+console.log("index.js : instanciated layout", layout);
+let TopBar = new BlocLayout({
   x: 0,
   y: 0,
   width: 100,
   height: 4,
   zIndex: 100,
   class: "TopBar"
-})
+});
+console.log("index.js : instanciated TopBar", TopBar);
 
-// Left bar
-layout.addBloc({
+let LeftBar = new BlocLayout({
   x: 0,
   y: 4,
   width: 10,
   height: 96,
   class: "LeftBar",
+  actionBar: true
 });
 
-
-// Right bar
-layout.addBloc({
+let RightBar = new BlocLayout({
   x: 85,
   y: 4,
   width: 15,
   height: 96,
   class: "RightBar",
+  actionBar: true
 });
 
-// 2nd Right bar
-layout.addBloc({
+let OtherRightBar = new BlocLayout({
   x: 75,
   y: 4,
   width: 4,
@@ -49,8 +49,8 @@ layout.addBloc({
   class: "RightBar",
 });
 
-// Bottom bar
-layout.addBloc({
+
+let BottomBar = new BlocLayout({
   x: 10,
   y: 92,
   width: 75,
@@ -58,22 +58,30 @@ layout.addBloc({
   class: "BottomBar",
 });
 
-// Other
-layout.addBloc({
+let OtherBloc = new BlocLayout({
   x: 20,
   y: 30,
   width: 30,
   height: 20,
   class: "Bloc",
+  actionBar: true
 });
 
+layout
+  .addBloc(TopBar)
+  .addBloc(RightBar)
+  .addBloc(LeftBar)
+  .addBloc(BottomBar)
+  .addBloc(OtherBloc)
+  .addBloc(OtherRightBar);
+
+console.log("index.js : added TopBar to layout");
+
 document.getElementById("clear-layout")?.addEventListener("click", () => {
-  layout.clear()
-})
-
-
-let saveBtn = document.getElementById("save-layout")?.addEventListener("click", () => {
-  let layouts = layout.exportLayout()
+  layout.clear();
+});
+document.getElementById("save-layout")?.addEventListener("click", () => {
+  let layouts = layout.exportLayout();
 
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(layouts, null, 2)], {
@@ -83,20 +91,20 @@ let saveBtn = document.getElementById("save-layout")?.addEventListener("click", 
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-})
+});
 
-let importInput = document.getElementById('import-file')
+let importInput = document.getElementById('import-file');
 if (importInput) {
   importInput.onchange = function (e?: Event) {
-    let file = (e?.target as any).files[0]
-    let fr = new FileReader()
+    let file = (e?.target as any).files[0];
+    let fr = new FileReader();
     fr.onload = () => {
       if (fr.result) {
-        layout.importLayout(JSON.parse(fr.result.toString()))
+        layout.importLayout(JSON.parse(fr.result.toString()));
       }
-    }
-    fr.readAsText(file)
-  }
+    };
+    fr.readAsText(file);
+  };
 }
 
 
@@ -111,6 +119,3 @@ if (importInput) {
 // }
 
 // game.start()
-// TODO: Par l'avenir il faudra changer en engine.start(), ce n'est plus le jeu que je veux démarrer mais le moteur de jeu
-
-

@@ -1,44 +1,12 @@
 Créer une class de création d'interface
-- Pouvoir créer un layout
-    - Diviser la fenêtre en x colonnes et y lignes pour pouvoir indiquer qu'un bloc doit aller faire x,y,w,h
-    - Pouvoir créer des blocs
-        - Pouvoir placer les blocs
-        - Les rendre redimmensionnable
-        - Pouvoir expand/collapse les blocs
-        - Pouvoir fermer les blocs
-        - Pouvoir "minimiser" les blocs (les mettres dans une toolbar speciale)
-    - Pouvoir déplacer les blocs dans d'autres blocs/layouts
-    - Nommer les emplacemetns de layout
-- Pouvoir créer des toolbars
-    - Lier des actions aux toolbars
-    - Icon, label, action
+
 - Créer des composants
     - Créer un component plus propre pour TreeView
         - Pour chaque item
             - Icons, Label, Sublabel (title), action, children
             - Gérer des formulaires
-    - Gérer les différents types de champs
-        - Color 
-        - Text, number
-        - Range
-        - Vector3, Vector2
-        - Boolean
-    - Créer des menus dropdown
-
-- Pouvoir sauvegarder les données utilisateur
-    - Avoir une sorte de store avec des namespaces pour enregistrer des données soit de la scène, soit de l'état de l'interface etc...
-    - Barre de progression pour le chargement des données
-        - Enregistrer des loaders dans un loader général (avoir un progressMax, currentProgress sur le général et les individuels, le général fera une somme de tous et calculera le chargement général)
-
-
-
-
-TODO: Nettoyer le fichier @types/index.d.ts
 
 TODO: Ne pas oublier qu'à la base, je fais toutes ces classes et interfaces pour faciliter le positionnement et le debug des éléments de la scene, notamment voir la trajectoire qu'un élement du système de Newton fera
-
-
-
 
 
 - Pouvoir passer sa souris sur les éléments de la scene (dans l'arbre ou la vue 3D) et les surligner
