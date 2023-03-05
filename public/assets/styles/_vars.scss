@@ -1,0 +1,19 @@
+:root {
+    --bg: #282b38;
+    --primary-color: ;
+    --secondary-color: ;
+    --info-color: ;
+    --warning-color: ;
+    --success-color: ;
+    --error-color: ;
+    --ggs: .7;
+}
+
+// Accessibility
+:root {
+    --a13y-resizer-size: 12px;
+}
+
+
+$transitionDuration: .33s;
+$transitionTiming: cubic-bezier(0, 0, 0, 1);

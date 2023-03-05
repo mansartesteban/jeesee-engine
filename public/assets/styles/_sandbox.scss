@@ -1,0 +1,147 @@
+.actions {
+    position: fixed;
+    top: 32px;
+    right: 320px;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 200px;
+}
+
+button {
+    color: var(--bg);
+    font-size: 20px;
+    padding: .4em .75em;
+    border-radius: 8px;
+    outline: none;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+
+    &:active {
+        background: #cccccc;
+    }
+
+}
+
+
+
+.dot {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: red;
+    bottom: 50vh;
+    left: 0;
+}
+
+.dot.success {
+    background: lime;
+    width: 4px;
+    height: 4px;
+}
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+#controls {
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: #171924;
+    font-size: 14px;
+    min-width: 200px;
+    max-width: 25%;
+    height: 100vh;
+    overflow: auto;
+    font-family: Helvetica, sans-serif;
+    border-left: 2px solid rgba(255, 255, 255, .1);
+
+    &>#entity-tree {
+        max-height: 33vh;
+        overflow-y: auto;
+        border-bottom: 2px solid rgba(255, 255, 255, .1);
+        // padding: 1em;
+    }
+
+
+    #entity-tree {
+
+        // padding-left: 1em;
+        .tree-node {
+
+
+            .node-content {
+
+                .node-label {
+                    white-space: nowrap;
+                }
+
+                .toggle-icon {
+                    display: flex;
+                }
+
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                padding: .2em .35em;
+
+                &.hovered {
+                    background: rgba(255, 255, 255, .08);
+                    cursor: pointer;
+                }
+
+            }
+
+            #entity-tree {
+                display: none;
+            }
+
+            &.expanded {
+                .toggle-icon svg {
+                    transform: rotate(180deg);
+                }
+
+                #entity-tree {
+                    display: block
+                }
+
+            }
+
+            .node-sublabel {
+                font-family: monospace;
+                margin-left: .5em;
+                font-size: .75em;
+                color: grey;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        }
+
+    }
+
+    input {
+        background: rgba(0, 0, 0, .25);
+        outline: none;
+        user-select: none;
+        border: 1px solid rgba(255, 255, 255, .1);
+        padding: .2em .35em;
+    }
+
+}
+
+.treeview-node .bi {
+    padding: 0.5em;
+}
+
+.treeview-node {
+    cursor: pointer;
+    padding: 0.5em;
+}

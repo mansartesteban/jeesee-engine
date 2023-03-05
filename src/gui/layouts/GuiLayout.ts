@@ -20,13 +20,28 @@ class GuiLayout extends Interfacor {
 
     importLayout(blocs: _BlocLayoutPosition[]) {
         this.clear();
-        blocs.forEach((bloc: _BlocLayoutPosition) => {
-            let blocInstance = new BlocLayout(this.transformBlocData(bloc));
+        blocs.forEach((bloc: any) => {
+            let blocInstance = new BlocLayout({ actionBar: bloc.actionBar });
+            blocInstance.isMinimized = bloc.isMinimized;
+            blocInstance.currentPosition = bloc.currentPosition;
+            blocInstance.savedPosition = bloc.savedPosition;
+            blocInstance.targetPosition = bloc.targetPosition;
+            blocInstance.setLayout(this);
             this.addBloc(blocInstance);
+            if (bloc.isClosed) {
+                blocInstance.close();
+            }
         });
     }
-    exportLayout(): _BlocLayoutPosition[] {
-        return this.blocs.map(bloc => bloc.currentPosition);
+    exportLayout(): any { //TODO: Attention au any
+        return this.blocs.map(bloc => ({
+            isMinimized: bloc.isMinimized,
+            isClosed: bloc.isClosed,
+            currentPosition: bloc.currentPosition,
+            savedPosition: bloc.savedPosition,
+            targetPosition: bloc.targetPosition,
+            actionBar: bloc.options.actionBar
+        }));
     }
 
     transformBlocData(datas: _BlocLayoutPosition): _BlocLayoutOptions {
@@ -40,8 +55,9 @@ class GuiLayout extends Interfacor {
     }
 
     clear() {
+        console.log(this.blocs);
         this.blocs.forEach(bloc => {
-            if (bloc.node) {
+            if (bloc.node && !bloc.isClosed) {
                 this.node?.removeChild(bloc.node);
             }
         });

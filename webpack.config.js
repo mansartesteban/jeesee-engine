@@ -15,6 +15,7 @@ module.exports = {
             path: false
         },
         alias: {
+            "@styles": path.resolve(__dirname, "public/assets/styles"),
             "@assets": path.resolve(__dirname, "public/assets"),
             "@utils": path.resolve(__dirname, "src/utils"),
             "@type": path.resolve(__dirname, "src/@types"),

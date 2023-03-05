@@ -5,6 +5,7 @@ import {
 	_BlocLayoutPosition,
 	_GridLayoutOptions,
 } from "@types";
+import MathUtils from "@utils/MathUtils";
 import { Vector2 } from "three";
 import ActionBar from "./ActionBar";
 import GuiLayout from "./GuiLayout";
@@ -99,6 +100,9 @@ class BlocLayout extends Interfacor {
 		if (this.options.actionBar) {
 			this.createActionBar();
 		}
+		if (this.options.isClosed) {
+			this.close();
+		}
 
 		this.reposition(true);
 
@@ -149,6 +153,7 @@ class BlocLayout extends Interfacor {
 	}
 
 	close() {
+
 		this.isClosed = true;
 
 		if (this.layout && this.layout.node && this.node) {
@@ -168,7 +173,6 @@ class BlocLayout extends Interfacor {
 
 	reposition(instant = false) {
 
-		let lerp = .01;
 		if (this.node) {
 
 			if (instant === true) {
@@ -194,6 +198,8 @@ class BlocLayout extends Interfacor {
 				this.currentPosition.from.y = this.lerp(this.options.animationSpeed || 1, this.currentPosition.from.y, this.targetPosition.from.y);
 				this.currentPosition.to.x = this.lerp(this.options.animationSpeed || 1, this.currentPosition.to.x, this.targetPosition.to.x);
 				this.currentPosition.to.y = this.lerp(this.options.animationSpeed || 1, this.currentPosition.to.y, this.targetPosition.to.y);
+				this.currentPosition.size.x = this.currentPosition.to.x - this.currentPosition.from.x;
+				this.currentPosition.size.y = this.currentPosition.to.y - this.currentPosition.from.y;
 			}
 
 			if (!instant) {
@@ -290,24 +296,24 @@ class BlocLayout extends Interfacor {
 								let bloc = this.layout.blocs[i];
 
 								// Doesn't apply calculation on current bloc
-								if (bloc !== this) {
+								if (bloc !== this && !bloc.isClosed) {
 
 									// Check if the bloc is close enough to apply calculation (with snapStrength)
 									if (
-										bloc.targetPosition.from[crossAxe] < (this.targetPosition.to[crossAxe] + snapStrength)
+										bloc.currentPosition.from[crossAxe] < (this.targetPosition.to[crossAxe] + snapStrength)
 										&&
-										bloc.targetPosition.to[crossAxe] > (this.targetPosition.from[crossAxe] - snapStrength)
+										bloc.currentPosition.to[crossAxe] > (this.targetPosition.from[crossAxe] - snapStrength)
 									) {
 
 										// Check is current edge is close enough to snap on first edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.targetPosition[from][mainAxe]) < snapStrength) {
-											pos = bloc.targetPosition[from][mainAxe];
+										if (Math.abs(mousePosition[mainAxe] - bloc.currentPosition[from][mainAxe]) < snapStrength) {
+											pos = bloc.currentPosition[from][mainAxe];
 											break;
 										}
 
 										// Check is current edge is close enough to snap on second edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.targetPosition[oppositeFrom][mainAxe]) < snapStrength) {
-											pos = bloc.targetPosition[oppositeFrom][mainAxe];
+										if (Math.abs(mousePosition[mainAxe] - bloc.currentPosition[oppositeFrom][mainAxe]) < snapStrength) {
+											pos = bloc.currentPosition[oppositeFrom][mainAxe];
 											break;
 										}
 
@@ -372,165 +378,84 @@ class BlocLayout extends Interfacor {
 
 					let mousePosition = GuiLayout.getMouseLayoutPosition(e.clientX, e.clientY);
 
-					let xTo = mousePosition.x - deltaClick.x + this.targetPosition.size.x;
-					let yTo = mousePosition.y - deltaClick.y + this.targetPosition.size.y;
-					let xFrom = mousePosition.x - deltaClick.x;
-					let yFrom = mousePosition.y - deltaClick.y;
+					// MathUtils.minMax(x, 0, 100) permits to not overtake the window
+					let xTo = MathUtils.minMax(mousePosition.x - deltaClick.x + this.targetPosition.size.x, 0, 100);
+					let yTo = MathUtils.minMax(mousePosition.y - deltaClick.y + this.targetPosition.size.y, 0, 100);
+					let xFrom = MathUtils.minMax(mousePosition.x - deltaClick.x, 0, 100);
+					let yFrom = MathUtils.minMax(mousePosition.y - deltaClick.y, 0, 100);
 
 					let isLeftSnapped = false;
 					let isRightSnapped = false;
 					let isTopSnapped = false;
 					let isBottomSnapped = false;
 
-					let nearBloc;
-
-					// Current bloc right side on other blocs left sides
 					if (this.layout) {
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(xTo - bl.targetPosition.from.x) < snapStrength
-							&&
-							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
-						);
-						if (nearBloc) {
-							xTo = nearBloc.targetPosition.from.x;
-							xFrom = xTo - this.targetPosition.size.x;
-							isRightSnapped = true;
+
+						// An array of magnetics points on axe X (by default, edges of window)
+						let edgesOnX = [];
+						edgesOnX.push(0);
+						edgesOnX.push(100);
+
+						// An array of magnetics points on axe Y (by default, edges of window)
+						let edgesOnY = [];
+						edgesOnY.push(0);
+						edgesOnY.push(100);
+
+						// For each bloc, push both X and Y edges to respectives arrays and create a kind of "constraints list"
+						for (let i = 0; i < this.layout.blocs.length; i++) {
+							let bloc = this.layout.blocs[i];
+
+							// If bloc is not the current one and is not closed (closed means not attached to DOM)
+							if (bloc == this || bloc.isClosed) continue;
+
+							// If bloc is close enough on axe Y to be a constraint on axe X
+							if (bloc.currentPosition.to.y > (yFrom - snapStrength) && bloc.currentPosition.from.y < (yTo + snapStrength)) {
+								edgesOnX.push(bloc.currentPosition.from.x);
+								edgesOnX.push(bloc.currentPosition.to.x);
+							}
+
+							// If bloc is close enough on axe X to be a constraint on axe Y
+							if (bloc.currentPosition.to.x > (xFrom - snapStrength) && bloc.currentPosition.from.x < (xTo + snapStrength)) {
+								edgesOnY.push(bloc.currentPosition.from.y);
+								edgesOnY.push(bloc.currentPosition.to.y);
+							}
+
 						}
 
-						// Current bloc bottom side on other blocs top sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(yTo - bl.targetPosition.from.y) < snapStrength
-							&&
-							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
-						);
-						if (nearBloc) {
-							yTo = nearBloc.targetPosition.from.y;
-							yFrom = yTo - this.targetPosition.size.y;
-							isBottomSnapped = true;
+						// For each edge found on X axis, calculate and apply the magnetism if so
+						for (let edgeOnX of edgesOnX) {
+							if (Math.abs(xTo - edgeOnX) < snapStrength) {
+								xTo = edgeOnX;
+								xFrom = xTo - this.targetPosition.size.x;
+								isRightSnapped = true;
+							}
+							if (Math.abs(xFrom - edgeOnX) < snapStrength) {
+								xFrom = edgeOnX;
+								xTo = xFrom + this.targetPosition.size.x;
+								isLeftSnapped = true;
+							}
 						}
 
-						// Current bloc left side on other blocs right sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(xFrom - bl.targetPosition.to.x) < snapStrength
-							&&
-							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
-						);
-						if (nearBloc) {
-							xFrom = nearBloc.targetPosition.to.x;
-							xTo = xFrom + this.targetPosition.size.x;
-							isLeftSnapped = true;
-						}
-
-						// Current bloc top side on other blocs bottom sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(yFrom - bl.targetPosition.to.y) < snapStrength
-							&&
-							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
-						);
-						if (nearBloc) {
-							yFrom = nearBloc.targetPosition.to.y;
-							yTo = yFrom + this.targetPosition.size.y;
-							isTopSnapped = true;
-						}
-
-						// Current bloc right side on other blocs right sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(xTo - bl.targetPosition.to.x) < snapStrength
-							&&
-							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
-						);
-						if (nearBloc) {
-							xTo = nearBloc.targetPosition.to.x;
-							xFrom = xTo - this.targetPosition.size.x;
-							isRightSnapped = true;
-						}
-
-						// Current bloc bottom side on other blocs bottom sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(yTo - bl.targetPosition.to.y) < snapStrength
-							&&
-							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
-						);
-						if (nearBloc) {
-							yTo = nearBloc.targetPosition.to.y;
-							yFrom = yTo - this.targetPosition.size.y;
-							isBottomSnapped = true;
-						}
-
-						// Current bloc left side on other blocs left sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(xFrom - bl.targetPosition.from.x) < snapStrength
-							&&
-							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
-						);
-						if (nearBloc) {
-							xFrom = nearBloc.targetPosition.from.x;
-							xTo = xFrom + this.targetPosition.size.x;
-							isLeftSnapped = true;
-						}
-
-						// Current bloc top side on other blocs top sides
-						nearBloc = this.layout.blocs.find(bl =>
-							bl !== this
-							&&
-							Math.abs(yFrom - bl.targetPosition.from.y) < snapStrength
-							&&
-							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
-						);
-						if (nearBloc) {
-							yFrom = nearBloc.targetPosition.from.y;
-							yTo = yFrom + this.targetPosition.size.y;
-							isTopSnapped = true;
-						}
-
-						// Make bloc not movable outside of container by the left
-						if (xFrom < snapStrength) {
-							xFrom = 0;
-							xTo = this.targetPosition.size.x;
-							isLeftSnapped = true;
-						}
-
-						// Make bloc not movable outside of container by the right
-						if (xTo > 100 - snapStrength) {
-							xFrom = 100 - this.targetPosition.size.x;
-							xTo = 100;
-							isRightSnapped = true;
-						}
-
-						// Make bloc not movable outside of container by the top
-						if (yFrom < snapStrength) {
-							yFrom = 0;
-							yTo = this.targetPosition.size.y;
-							isTopSnapped = true;
-						}
-
-						// Make bloc not movable outside of container by the bottom
-						if (yTo > 100 - snapStrength) {
-							yFrom = 100 - this.targetPosition.size.y;
-							yTo = 100;
-							isBottomSnapped = true;
+						// For each edge found on Y axis, calculate and apply the magnetism if so
+						for (let edgeOnY of edgesOnY) {
+							if (Math.abs(yTo - edgeOnY) < snapStrength) {
+								yTo = edgeOnY;
+								yFrom = yTo - this.targetPosition.size.y;
+								isBottomSnapped = true;
+							}
+							if (Math.abs(yFrom - edgeOnY) < snapStrength) {
+								yFrom = edgeOnY;
+								yTo = yFrom + this.targetPosition.size.y;
+								isTopSnapped = true;
+							}
 						}
 					}
-
 
 					this.targetPosition.to.x = xTo;
 					this.targetPosition.to.y = yTo;
 					this.targetPosition.from.x = xFrom;
 					this.targetPosition.from.y = yFrom;
+
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
 
 					if (this.node) {

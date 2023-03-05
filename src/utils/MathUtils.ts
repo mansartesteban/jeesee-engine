@@ -5,6 +5,9 @@ class MathUtils {
 	static mapRange(x: number, fromMin: number, fromMax: number, toMin: number, toMax: number) {
 		return toMin + ((toMax - toMin) / (fromMax - fromMin)) * (x - fromMin);
 	}
+	static minMax(x: number, min: number, max: number): number {
+		return x < min ? min : (x > max ? max : x);
+	}
 }
 
 export default MathUtils;

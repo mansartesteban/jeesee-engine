@@ -13,12 +13,27 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@types": ["src/@types"],
-      "@types/*": ["src/@types/*"],
-      "@assets/*": ["public/assets/*"],
-      "@utils/*": ["src/utils/*"],
-      "@actors/*": ["src/actors/*"],
-      "@/*": ["src/*"]
+      "@types": [
+        "src/@types"
+      ],
+      "@types/*": [
+        "src/@types/*"
+      ],
+      "@assets/*": [
+        "public/assets/*"
+      ],
+      "@styles/*": [
+        "public/assets/styles/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@actors/*": [
+        "src/actors/*"
+      ],
+      "@/*": [
+        "src/*"
+      ]
     }
   },
   "exclude": [

@@ -57,18 +57,19 @@ type _GridLayoutOptions = {
 };
 
 type _BlocLayoutOptions = {
-    x?: number,
-    y?: number,
-    width?: number,
-    height?: number,
-    zIndex?: number,
-    resizableX?: boolean,
-    resizableY?: boolean,
-    actionBar?: boolean,
-    class?: string,
-    snapStrength?: number,
-    resizerSize?: number,
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    zIndex?: number;
+    resizableX?: boolean;
+    resizableY?: boolean;
+    actionBar?: boolean;
+    class?: string;
+    snapStrength?: number;
+    resizerSize?: number;
     animationSpeed?: number;
+    isClosed?: boolean;
 };
 
 type _BlocLayoutPosition = {
