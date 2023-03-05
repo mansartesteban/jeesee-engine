@@ -26,7 +26,7 @@ class GuiLayout extends Interfacor {
         });
     }
     exportLayout(): _BlocLayoutPosition[] {
-        return this.blocs.map(bloc => bloc.position);
+        return this.blocs.map(bloc => bloc.currentPosition);
     }
 
     transformBlocData(datas: _BlocLayoutPosition): _BlocLayoutOptions {
@@ -57,10 +57,10 @@ class GuiLayout extends Interfacor {
         return this;
     }
 
-    static getScreenPosition(x: number, y: number): MiniVector2 {
+    static getMouseLayoutPosition(x: number, y: number): MiniVector2 {
         let coordinate = new MiniVector2(
-            MathUtils.mapRange(x, 0, window.innerWidth, 0, 100),
-            MathUtils.mapRange(y, 0, window.innerHeight, 0, 100)
+            x * (100 / window.innerWidth),
+            y * (100 / window.innerHeight)
         );
         if (coordinate.x > 100) coordinate.x = 100;
         if (coordinate.x < 0) coordinate.x = 0;

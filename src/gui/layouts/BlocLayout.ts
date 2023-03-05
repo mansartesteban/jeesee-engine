@@ -28,17 +28,19 @@ class BlocLayout extends Interfacor {
 		actionBar: false,
 		snapStrength: 1.5,
 		resizerSize: 12,
+		animationSpeed: .11
 	};
 
 	layout: GuiLayout | null = null;
 
-	position: _BlocLayoutPosition = {
+	targetPosition: _BlocLayoutPosition = {
 		from: new Vector2(),
 		to: new Vector2(),
 		size: new Vector2(),
 	};
 
-	savedPosition = this.position;
+	currentPosition = JSON.parse(JSON.stringify(this.targetPosition));
+	savedPosition = this.currentPosition;
 
 	isClosed: boolean = false;
 	isMinimized: boolean = false;
@@ -53,26 +55,29 @@ class BlocLayout extends Interfacor {
 		}
 
 		if (this.options.x !== undefined) {
-			this.position.from.x = this.options.x;
+			this.targetPosition.from.x = this.options.x;
 			if (this.options.width !== undefined) {
-				this.position.size.x = this.options.width;
-				this.position.to.x = this.options.x + this.options.width;
+				this.targetPosition.size.x = this.options.width;
+				this.targetPosition.to.x = this.options.x + this.options.width;
 			}
 		}
 
 		if (this.options.y !== undefined) {
-			this.position.from.y = this.options.y;
+			this.targetPosition.from.y = this.options.y;
 			if (this.options.height !== undefined) {
-				this.position.size.y = this.options.height;
-				this.position.to.y = this.options.y + this.options.height;
+				this.targetPosition.size.y = this.options.height;
+				this.targetPosition.to.y = this.options.y + this.options.height;
 			}
 		}
+
 
 		if (this.options.resizerSize) {
 			document.documentElement.style.setProperty("--a13y-resizer-size", this.options.resizerSize + "px");
 		}
 
 		this.createElement();
+
+		window.requestAnimationFrame(this.reposition.bind(this, false));
 	}
 
 	setLayout(layout: GuiLayout) {
@@ -88,14 +93,6 @@ class BlocLayout extends Interfacor {
 			this.node.style.zIndex = this.options.zIndex.toString();
 		}
 
-		this.observer.$on(
-			[
-				BlocLayout.EVENTS.BLOC_RESIZE,
-				BlocLayout.EVENTS.BLOC_MOVE
-			],
-			this.reposition.bind(this)
-		);
-
 		this.makeResizable();
 		this.makeMovable();
 
@@ -103,7 +100,8 @@ class BlocLayout extends Interfacor {
 			this.createActionBar();
 		}
 
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE);
+		this.reposition(true);
+
 	}
 
 	createActionBar() {
@@ -129,25 +127,25 @@ class BlocLayout extends Interfacor {
 	minimize() {
 		this.isMinimized = true;
 
-		this.savedPosition = JSON.parse(JSON.stringify(this.position));
+		this.savedPosition = JSON.parse(JSON.stringify(this.currentPosition));
 
-		this.position.from.x = 2;
-		this.position.size.x = 10;
-		this.position.to.x = this.position.from.x + this.position.size.x;
+		this.targetPosition.from.x = 2;
+		this.targetPosition.size.x = 10;
+		this.targetPosition.to.x = this.targetPosition.from.x + this.targetPosition.size.x;
 
-		this.position.from.y = 96;
-		this.position.size.y = 4;
-		this.position.to.x = this.position.from.y + this.position.size.y;
+		this.targetPosition.from.y = 96;
+		this.targetPosition.size.y = 4;
+		this.targetPosition.to.y = this.targetPosition.from.y + this.targetPosition.size.y;
 
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_MINIMIZE);
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_MINIMIZE);
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
 	}
 
 	unminimize() {
 		this.isMinimized = false;
-		this.position = this.savedPosition;
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_UNMINIMIZE);
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
+		this.targetPosition = this.savedPosition;
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_UNMINIMIZE);
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
 	}
 
 	close() {
@@ -157,21 +155,50 @@ class BlocLayout extends Interfacor {
 			this.layout.node.removeChild(this.node);
 		}
 
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_CLOSE);
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_CLOSE);
 	}
 	open() {
 		this.isClosed = false;
-		this.observer.$emit(BlocLayout.EVENTS.BLOC_OPEN);
+		// this.observer.$emit(BlocLayout.EVENTS.BLOC_OPEN);
 	}
 
+	lerp(v: number, a: number, b: number) {
+		return a + (b - a) * v;
+	}
 
+	reposition(instant = false) {
 
-	reposition() {
+		let lerp = .01;
 		if (this.node) {
-			this.node.style.left = `${this.position.from.x}vw`;
-			this.node.style.right = `${100 - this.position.to.x}vw`;
-			this.node.style.top = `${this.position.from.y}vh`;
-			this.node.style.bottom = `${100 - this.position.to.y}vh`;
+
+			if (instant === true) {
+				this.currentPosition = JSON.parse(JSON.stringify(this.targetPosition));
+			}
+
+			this.node.style.left = `${this.currentPosition.from.x}vw`;
+			this.node.style.right = `${100 - this.currentPosition.to.x}vw`;
+			this.node.style.top = `${this.currentPosition.from.y}vh`;
+			this.node.style.bottom = `${100 - this.currentPosition.to.y}vh`;
+
+			if (
+				Math.abs(this.currentPosition.from.x - this.targetPosition.from.x) > 0
+				||
+				Math.abs(this.currentPosition.from.y - this.targetPosition.from.y) > 0
+				||
+				Math.abs(this.currentPosition.to.x - this.targetPosition.to.x) > 0
+				||
+				Math.abs(this.currentPosition.to.y - this.targetPosition.to.y) > 0
+
+			) {
+				this.currentPosition.from.x = this.lerp(this.options.animationSpeed || 1, this.currentPosition.from.x, this.targetPosition.from.x);
+				this.currentPosition.from.y = this.lerp(this.options.animationSpeed || 1, this.currentPosition.from.y, this.targetPosition.from.y);
+				this.currentPosition.to.x = this.lerp(this.options.animationSpeed || 1, this.currentPosition.to.x, this.targetPosition.to.x);
+				this.currentPosition.to.y = this.lerp(this.options.animationSpeed || 1, this.currentPosition.to.y, this.targetPosition.to.y);
+			}
+
+			if (!instant) {
+				window.requestAnimationFrame(this.reposition.bind(this, false));
+			}
 		}
 	}
 
@@ -251,7 +278,7 @@ class BlocLayout extends Interfacor {
 						e.stopPropagation();
 
 						// Get mouse position transform from 0 to 100
-						let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY);
+						let mousePosition = GuiLayout.getMouseLayoutPosition(e.clientX, e.clientY);
 
 						// Get mopuse position on current main axe
 						let pos = mousePosition[mainAxe];
@@ -267,20 +294,20 @@ class BlocLayout extends Interfacor {
 
 									// Check if the bloc is close enough to apply calculation (with snapStrength)
 									if (
-										bloc.position.from[crossAxe] < (this.position.to[crossAxe] + snapStrength)
+										bloc.targetPosition.from[crossAxe] < (this.targetPosition.to[crossAxe] + snapStrength)
 										&&
-										bloc.position.to[crossAxe] > (this.position.from[crossAxe] - snapStrength)
+										bloc.targetPosition.to[crossAxe] > (this.targetPosition.from[crossAxe] - snapStrength)
 									) {
 
 										// Check is current edge is close enough to snap on first edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.position[from][mainAxe]) < snapStrength) {
-											pos = bloc.position[from][mainAxe];
+										if (Math.abs(mousePosition[mainAxe] - bloc.targetPosition[from][mainAxe]) < snapStrength) {
+											pos = bloc.targetPosition[from][mainAxe];
 											break;
 										}
 
 										// Check is current edge is close enough to snap on second edge of other bloc within the main axe
-										if (Math.abs(mousePosition[mainAxe] - bloc.position[oppositeFrom][mainAxe]) < snapStrength) {
-											pos = bloc.position[oppositeFrom][mainAxe];
+										if (Math.abs(mousePosition[mainAxe] - bloc.targetPosition[oppositeFrom][mainAxe]) < snapStrength) {
+											pos = bloc.targetPosition[oppositeFrom][mainAxe];
 											break;
 										}
 
@@ -295,9 +322,8 @@ class BlocLayout extends Interfacor {
 						pos = pos > 100 - snapStrength ? 100 : (pos < snapStrength ? 0 : pos);
 
 						// Finally apply calculted new position of the edge et recalculate size of the bloc
-						console.log(this.position[oppositeFrom][mainAxe], pos, Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength, Math.abs(this.position[oppositeFrom][mainAxe] - pos));
-						this.position[from][mainAxe] = Math.abs(this.position[oppositeFrom][mainAxe] - pos) >= snapStrength ? pos : this.position[oppositeFrom][mainAxe];
-						this.position.size[mainAxe] = Math.abs(this.position[from][mainAxe] - this.position[oppositeFrom][mainAxe]);
+						this.targetPosition[from][mainAxe] = Math.abs(this.targetPosition[oppositeFrom][mainAxe] - pos) >= snapStrength ? pos : this.targetPosition[oppositeFrom][mainAxe];
+						this.targetPosition.size[mainAxe] = Math.abs(this.targetPosition[from][mainAxe] - this.targetPosition[oppositeFrom][mainAxe]);
 
 						// Emit an event on observer to annouce the bloc has resized
 						this.observer.$emit(BlocLayout.EVENTS.BLOC_RESIZE);
@@ -336,18 +362,18 @@ class BlocLayout extends Interfacor {
 					this.node.classList.toggle("moving", true);
 				}
 
-				let originalClick = GuiLayout.getScreenPosition(e.clientX, e.clientY);
+				let originalClick = GuiLayout.getMouseLayoutPosition(e.clientX, e.clientY);
 				let deltaClick = new Vector2(
-					originalClick.x - this.position.from.x,
-					originalClick.y - this.position.from.y
+					originalClick.x - this.targetPosition.from.x,
+					originalClick.y - this.targetPosition.from.y
 				);
 
 				const mouseMoveHandler = (e: MouseEvent) => {
 
-					let mousePosition = GuiLayout.getScreenPosition(e.clientX, e.clientY);
+					let mousePosition = GuiLayout.getMouseLayoutPosition(e.clientX, e.clientY);
 
-					let xTo = mousePosition.x - deltaClick.x + this.position.size.x;
-					let yTo = mousePosition.y - deltaClick.y + this.position.size.y;
+					let xTo = mousePosition.x - deltaClick.x + this.targetPosition.size.x;
+					let yTo = mousePosition.y - deltaClick.y + this.targetPosition.size.y;
 					let xFrom = mousePosition.x - deltaClick.x;
 					let yFrom = mousePosition.y - deltaClick.y;
 
@@ -363,13 +389,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(xTo - bl.position.from.x) < snapStrength
+							Math.abs(xTo - bl.targetPosition.from.x) < snapStrength
 							&&
-							bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
+							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
 						);
 						if (nearBloc) {
-							xTo = nearBloc.position.from.x;
-							xFrom = xTo - this.position.size.x;
+							xTo = nearBloc.targetPosition.from.x;
+							xFrom = xTo - this.targetPosition.size.x;
 							isRightSnapped = true;
 						}
 
@@ -377,13 +403,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(yTo - bl.position.from.y) < snapStrength
+							Math.abs(yTo - bl.targetPosition.from.y) < snapStrength
 							&&
-							bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
+							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
 						);
 						if (nearBloc) {
-							yTo = nearBloc.position.from.y;
-							yFrom = yTo - this.position.size.y;
+							yTo = nearBloc.targetPosition.from.y;
+							yFrom = yTo - this.targetPosition.size.y;
 							isBottomSnapped = true;
 						}
 
@@ -391,13 +417,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(xFrom - bl.position.to.x) < snapStrength
+							Math.abs(xFrom - bl.targetPosition.to.x) < snapStrength
 							&&
-							bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
+							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
 						);
 						if (nearBloc) {
-							xFrom = nearBloc.position.to.x;
-							xTo = xFrom + this.position.size.x;
+							xFrom = nearBloc.targetPosition.to.x;
+							xTo = xFrom + this.targetPosition.size.x;
 							isLeftSnapped = true;
 						}
 
@@ -405,13 +431,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(yFrom - bl.position.to.y) < snapStrength
+							Math.abs(yFrom - bl.targetPosition.to.y) < snapStrength
 							&&
-							bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
+							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
 						);
 						if (nearBloc) {
-							yFrom = nearBloc.position.to.y;
-							yTo = yFrom + this.position.size.y;
+							yFrom = nearBloc.targetPosition.to.y;
+							yTo = yFrom + this.targetPosition.size.y;
 							isTopSnapped = true;
 						}
 
@@ -419,13 +445,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(xTo - bl.position.to.x) < snapStrength
+							Math.abs(xTo - bl.targetPosition.to.x) < snapStrength
 							&&
-							bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
+							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
 						);
 						if (nearBloc) {
-							xTo = nearBloc.position.to.x;
-							xFrom = xTo - this.position.size.x;
+							xTo = nearBloc.targetPosition.to.x;
+							xFrom = xTo - this.targetPosition.size.x;
 							isRightSnapped = true;
 						}
 
@@ -433,13 +459,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(yTo - bl.position.to.y) < snapStrength
+							Math.abs(yTo - bl.targetPosition.to.y) < snapStrength
 							&&
-							bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
+							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
 						);
 						if (nearBloc) {
-							yTo = nearBloc.position.to.y;
-							yFrom = yTo - this.position.size.y;
+							yTo = nearBloc.targetPosition.to.y;
+							yFrom = yTo - this.targetPosition.size.y;
 							isBottomSnapped = true;
 						}
 
@@ -447,13 +473,13 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(xFrom - bl.position.from.x) < snapStrength
+							Math.abs(xFrom - bl.targetPosition.from.x) < snapStrength
 							&&
-							bl.position.to.y > (yFrom - snapStrength) && bl.position.from.y < (yTo + snapStrength)
+							bl.targetPosition.to.y > (yFrom - snapStrength) && bl.targetPosition.from.y < (yTo + snapStrength)
 						);
 						if (nearBloc) {
-							xFrom = nearBloc.position.from.x;
-							xTo = xFrom + this.position.size.x;
+							xFrom = nearBloc.targetPosition.from.x;
+							xTo = xFrom + this.targetPosition.size.x;
 							isLeftSnapped = true;
 						}
 
@@ -461,26 +487,26 @@ class BlocLayout extends Interfacor {
 						nearBloc = this.layout.blocs.find(bl =>
 							bl !== this
 							&&
-							Math.abs(yFrom - bl.position.from.y) < snapStrength
+							Math.abs(yFrom - bl.targetPosition.from.y) < snapStrength
 							&&
-							bl.position.to.x > (xFrom - snapStrength) && bl.position.from.x < (xTo + snapStrength)
+							bl.targetPosition.to.x > (xFrom - snapStrength) && bl.targetPosition.from.x < (xTo + snapStrength)
 						);
 						if (nearBloc) {
-							yFrom = nearBloc.position.from.y;
-							yTo = yFrom + this.position.size.y;
+							yFrom = nearBloc.targetPosition.from.y;
+							yTo = yFrom + this.targetPosition.size.y;
 							isTopSnapped = true;
 						}
 
 						// Make bloc not movable outside of container by the left
 						if (xFrom < snapStrength) {
 							xFrom = 0;
-							xTo = this.position.size.x;
+							xTo = this.targetPosition.size.x;
 							isLeftSnapped = true;
 						}
 
 						// Make bloc not movable outside of container by the right
 						if (xTo > 100 - snapStrength) {
-							xFrom = 100 - this.position.size.x;
+							xFrom = 100 - this.targetPosition.size.x;
 							xTo = 100;
 							isRightSnapped = true;
 						}
@@ -488,23 +514,23 @@ class BlocLayout extends Interfacor {
 						// Make bloc not movable outside of container by the top
 						if (yFrom < snapStrength) {
 							yFrom = 0;
-							yTo = this.position.size.y;
+							yTo = this.targetPosition.size.y;
 							isTopSnapped = true;
 						}
 
 						// Make bloc not movable outside of container by the bottom
 						if (yTo > 100 - snapStrength) {
-							yFrom = 100 - this.position.size.y;
+							yFrom = 100 - this.targetPosition.size.y;
 							yTo = 100;
 							isBottomSnapped = true;
 						}
 					}
 
 
-					this.position.to.x = xTo;
-					this.position.to.y = yTo;
-					this.position.from.x = xFrom;
-					this.position.from.y = yFrom;
+					this.targetPosition.to.x = xTo;
+					this.targetPosition.to.y = yTo;
+					this.targetPosition.from.x = xFrom;
+					this.targetPosition.from.y = yFrom;
 					this.observer.$emit(BlocLayout.EVENTS.BLOC_MOVE);
 
 					if (this.node) {

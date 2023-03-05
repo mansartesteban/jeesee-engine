@@ -67,7 +67,8 @@ type _BlocLayoutOptions = {
     actionBar?: boolean,
     class?: string,
     snapStrength?: number,
-    resizerSize?: number;
+    resizerSize?: number,
+    animationSpeed?: number;
 };
 
 type _BlocLayoutPosition = {
